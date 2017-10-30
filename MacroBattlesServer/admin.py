@@ -4,6 +4,7 @@ import webapp2
 
 from google.appengine.api import users
 from turnhandlers import TurnHandler
+from gamelogic import *
 
 class AdminLoginHandler(webapp2.RequestHandler):
   def get(self):
@@ -19,12 +20,18 @@ class AdminLoginHandler(webapp2.RequestHandler):
 
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
+
 class TestTurnHandler(webapp2.RequestHandler):
     def get(self):
         # TODO: make sure this is asyncronous, in case the calculations for a turn take a long time.
         TurnHandler.handleTurn();
 
+class TestMapGeneration(webapp2.RequestHandler):
+  def get(self):
+    generateMapTiles()
+
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin/login', handler=AdminLoginHandler, name='admin-login'),
     webapp2.Route(r'/admin/turn', handler=TestTurnHandler, name='admin-turn'),
+    webapp2.Route(r'/admin/make-map', handler=TestMapGeneration, name='admin-make-map'),
 ], debug=True)

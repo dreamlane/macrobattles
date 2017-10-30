@@ -1,0 +1,651 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"cho",
+				"choice"
+			],
+			[
+				"j",
+				"j"
+			],
+			[
+				"pie",
+				"pieces"
+			],
+			[
+				"S",
+				"SUCCESS_STATUS"
+			],
+			[
+				"re",
+				"response"
+			],
+			[
+				"erro",
+				"errorField"
+			],
+			[
+				"hand",
+				"handleRegisterClick"
+			],
+			[
+				"reg",
+				"registerButton"
+			],
+			[
+				"St",
+				"StartCoroutine"
+			],
+			[
+				"Get",
+				"GetResponseHeaders"
+			],
+			[
+				"up",
+				"uploadLoginForm"
+			],
+			[
+				"Unit",
+				"UnityWebRequest"
+			],
+			[
+				"pas",
+				"passwordField"
+			],
+			[
+				"G",
+				"GEAR_SLOT_MAP"
+			],
+			[
+				"ite",
+				"item_key"
+			],
+			[
+				"ge",
+				"gear_slot"
+			],
+			[
+				"g",
+				"gear_slot"
+			],
+			[
+				"Eq",
+				"EquipItemCommandRequest"
+			],
+			[
+				"item",
+				"item_type"
+			],
+			[
+				"of",
+				"off_hand"
+			],
+			[
+				"ONE",
+				"ONE_HANDED_SWORD"
+			],
+			[
+				"LE",
+				"LEATHER"
+			],
+			[
+				"cre",
+				"createBaseItem"
+			],
+			[
+				"it",
+				"item_type"
+			],
+			[
+				"bas",
+				"base_value"
+			],
+			[
+				"curre",
+				"current_value"
+			],
+			[
+				"armo",
+				"armor_piece"
+			],
+			[
+				"CR",
+				"CRUSH_RESIST"
+			],
+			[
+				"block",
+				"block_chance"
+			],
+			[
+				"hero",
+				"heroModel"
+			],
+			[
+				"crit_ch",
+				"crit_chance_multipliers"
+			],
+			[
+				"clas",
+				"class_properties"
+			],
+			[
+				"I",
+				"INTELLIGENCE"
+			],
+			[
+				"cur",
+				"current_value"
+			],
+			[
+				"s",
+				"self"
+			],
+			[
+				"apply",
+				"applyDamage"
+			],
+			[
+				"cu",
+				"current_value"
+			],
+			[
+				"curren",
+				"current_hp"
+			],
+			[
+				"damge",
+				"damage_type"
+			],
+			[
+				"Attribu",
+				"AttributePair"
+			],
+			[
+				"he",
+				"hero_model"
+			],
+			[
+				"print",
+				"printTeam"
+			],
+			[
+				"ac",
+				"actors"
+			],
+			[
+				"get",
+				"getActorForPosition"
+			],
+			[
+				"ENE",
+				"ENEMY_LINE_FRONTLINE"
+			],
+			[
+				"actor",
+				"actor_list"
+			],
+			[
+				"act",
+				"actor_list"
+			],
+			[
+				"targe",
+				"target_type"
+			],
+			[
+				"hp",
+				"max_hp"
+			],
+			[
+				"incom",
+				"incomeFromNextWorker"
+			],
+			[
+				"tota",
+				"totalIncome"
+			],
+			[
+				"inc",
+				"incomeFromNextWorker"
+			],
+			[
+				"abv",
+				"availableServants"
+			],
+			[
+				"ava",
+				"availableServants"
+			],
+			[
+				"thi",
+				"thirdExpoTile"
+			],
+			[
+				"cap",
+				"capacity"
+			],
+			[
+				"Map",
+				"MapTile"
+			],
+			[
+				"ex",
+				"extraWorkerRate"
+			],
+			[
+				"Soldier",
+				"SoldierType"
+			],
+			[
+				"Soldi",
+				"SoldierModel"
+			],
+			[
+				"proto",
+				"prototype"
+			],
+			[
+				"pro",
+				"prototype"
+			],
+			[
+				"pr",
+				"prototype"
+			],
+			[
+				"def",
+				"defaultKingdomData"
+			],
+			[
+				"is",
+				"isRightKingdom"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/D/Downloads/bits_2.c",
+			"settings":
+			{
+				"buffer_size": 8984,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "import random\n\ndef available_attempts(attempts):\n  if attempts >= 3:\n    return False\n  else:\n    return True\n\npieces = {}\npieces[\"7\"] = 106/2\npieces[\"8\"] = 104/2\npieces[\"10\"] = 106/2\npieces[\"11\"] = 104/2\npieces[\"12\"] = 52/2\npieces[\"0\"] = 52/2\n\nrows = 13\ncolumns = 21\n\ngrid = [[None for i in range(rows)] for j in range(columns)]\n\ni=0\nj=0\nattempts= 0\nwhile i < columns:\n  while j < rows:\n    attempts += 1\n    choice = random.choice(pieces.keys())\n\n    #check to see if the choice is valid\n    # try:\n    #   if grid[i-1][j] == choice and available_attempts(attempts):\n    #     continue\n    # except IndexError:\n    #   pass\n    # try:\n    #   if grid[i][j-1] == choice and available_attempts(attempts):\n    #     continue\n    # except IndexError:\n    #   pass\n    if pieces[choice] <= 0:\n      continue\n      print pieces\n    grid[i][j] = choice\n    pieces[choice] -= 1\n    attempts = 0\n    j+=1\n  i+=1\n  j = 0\n\noutput = \"\"\nfor i in range(rows):\n  for j in range(columns):\n    output += grid[j][i]+ \"  \"\n    if len(grid[j][i]) == 1:\n      output += \" \"\n  output += \"\\n\"\n\nprint output\nprint pieces\n\n",
+			"file": "/C/Users/Dreamlane/Documents/PRD.py",
+			"file_size": 1161,
+			"file_write_time": 131506845831871905,
+			"settings":
+			{
+				"buffer_size": 1100,
+				"line_ending": "Windows",
+				"name": "sevens = 106"
+			}
+		}
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 400.0,
+		"last_filter": "packa",
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 408.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/MacroBattles",
+		"/D/MacroBattles/MacroBattlesServer",
+		"/D/MacroBattlesUnity/MacroBattles/Assets/Scripts"
+	],
+	"file_history":
+	[
+		"/C/Program Files (x86)/FileZilla Server/FileZilla Server.xml",
+		"/D/MacroBattles/admin.py",
+		"/D/MacroBattles/requestutils.py",
+		"/D/MacroBattles/main.py",
+		"/D/MacroBattles/models.py",
+		"/D/MacroBattlesUnity/MacroBattles/Assets/Scripts/LoginHandler.cs",
+		"/D/MacroBattles/userhandlers.py",
+		"/D/MacroBattles/turnhandlers.py",
+		"/D/MacroBattles/app.yaml",
+		"/D/MacroBattlesUnity/MacroBattles/Assets/Scripts/Models.cs",
+		"/D/MacroBattlesUnity/MacroBattles/Assets/Scripts/GameSceneMain.cs",
+		"/D/MacroBattles/requesthandler.py",
+		"/D/MacroBattles/names.py",
+		"/D/MacroBattlesUnity/MacroBattles/Assets/Scripts/Constants.cs",
+		"/D/MacroBattles/decisionhandlers.py",
+		"/D/MacroBattles/model/player.py",
+		"/D/MacroBattles/model/__init__.py",
+		"/D/MacroBattles/decisionhandlers/townsperson.py",
+		"/D/MacroBattles/playerhandlers/user.py",
+		"/D/MacroBattles/appengine_config.py",
+		"/D/MacroBattles/playerhandlers/__init__.py",
+		"/D/MacroBattles/decision-handlers/townsperson-hire-handler.py",
+		"/D/Cloud SDK/google-cloud-sdk/platform/google_appengine/README",
+		"/D/MacroBattles/decision-handlers/__init__.py",
+		"/D/MacroBattles/WEB-INF/appengine-web.xml",
+		"/D/MacroBattles/WEB-INF/web.xml",
+		"/D/MacroBattles/HelloServlet.java",
+		"/D/MacroBattles/main_test.py",
+		"/D/Cloud SDK/google-cloud-sdk/README",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/model/hero_model.py",
+		"/D/medieval-manager/app.yaml",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/app.yaml",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/item_utils.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/hero_api.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/main.py",
+		"/D/medieval-manager/main.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/model/item_model.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/constants.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/model/ability_model.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/battle_utils.py",
+		"/C/Users/Dreamlane/Documents/GitHub/POEexpMon/expReader.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/actor.py",
+		"/C/Users/Dreamlane/Documents/GitHub/POEexpMon/exileprocessor.py",
+		"/C/Users/Dreamlane/Documents/GitHub/POEexpMon/README.md",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/battle_simulator.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/battle/actor.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/constants.py",
+		"/C/Users/Dreamlane/Documents/quintas-tag/index.html",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/static.js",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/soldier.js",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/army.js",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/map.js",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/status_effect.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/status_effect_to_apply.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/ability.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/model/player_model.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/battle_simulator.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/team.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/actor.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/__init__.py",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/kingdom.js",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/attribute_pair.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/constants.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battle/__init__.py",
+		"/C/Users/Dreamlane/Documents/quintas-tag/index.js",
+		"/C/Users/Dreamlane/Documents/quintas-tag/models/player.js",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/battlesimulation/battle_simulator.py",
+		"/C/Users/Dreamlane/Documents/GitHub/WealthiestMan/README.md",
+		"/C/Users/Dreamlane/Documents/quintas-tag/package.json",
+		"/C/Users/Dreamlane/Documents/Financial Planning/retirementTool.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/player_api.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/model/__init__.py",
+		"/C/Users/Dreamlane/Documents/GitHub/idleheroes/api/__init__.py",
+		"/C/Users/Dreamlane/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 104.0,
+		"where_history":
+		[
+			"C:\\Users\\Dreamlane\\Documents\\GitHub\\idleheroes",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"randint",
+			"randInt",
+			"webapp2",
+			"{get;set;}",
+			"EditorApplication",
+			"constants.",
+			"INTELLIGENCE",
+			"ndb.enum",
+			"Map",
+			"));\n",
+			"Army",
+			"army.js"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"random.randint",
+			"randint",
+			";",
+			"",
+			"WISDOM"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/D/Downloads/bits_2.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8984,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6383,
+								6414
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3360.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 1,
+					"file": "/C/Users/Dreamlane/Documents/PRD.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1100,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								241,
+								241
+							]
+						],
+						"settings":
+						{
+							"auto_name": "sevens = 106",
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 32.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 225.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "onedaygame.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"consta",
+				"idleheroes\\api\\constants.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"C:\\Users\\Dreamlane\\Documents\\Financial Planning\\hacking.sublime-project"
+			]
+		],
+		"width": 599.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 188.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -14,6 +14,7 @@ from models import MetalProperties
 from models import WoodProperties
 from models import LeatherProperties
 from models import MapTile
+from models import Player
 
 def generateTileResource():
   ## Randomly choose a resource type key.
@@ -45,8 +46,8 @@ def generateTileResource():
 
 def generateMapTiles():
   map_tile_models = []
-  for x in range(0,3):
-    for y in range(0,3):
+  for x in range(0,4):
+    for y in range(0,4):
       tile_resources = []
       for i in range(0,3):
         tile_resources.append(generateTileResource())
@@ -57,3 +58,25 @@ def generateMapTiles():
         is_home_tile = False
       ))
   ndb.put_multi(map_tile_models)
+
+def addPlayerToWorld(player_id):
+  map_query = MapTile.query()
+  map_tiles = map_query.fetch(map_query.count())
+  home_tile = choice(map_tiles)
+  while not validateHomeTileSelection(home_tile):
+    # TODO: guard against infinite loop
+    home_tile = choice(map_tiles)
+    logging.info('trying again')
+  # Get player
+  player_query = Player.query(Player.username == player_id)
+  if player_query.count() > 0:
+    player = player_query.get()
+    # TODO: figure out if this is safe, due to 1 failing, and other succeeding.
+    home_tile.is_home_tile = True
+    player.home_tile = home_tile.put()
+    player.put()
+  else:
+    logging.error('no playoooooor')
+
+def validateHomeTileSelection(tile):
+  return not tile.is_home_tile

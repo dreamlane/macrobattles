@@ -62,7 +62,10 @@ class Player(ndb.Model):
   password = ndb.StringProperty(indexed=False)
 
   # The resources the player owns.
-  resources = ndb.StructuredProperty(Resource, repeated=True)
+  resources = ndb.KeyProperty(kind='Resource', repeated=True)
+
+  # The home tile for this player
+  home_tile = ndb.KeyProperty(kind='MapTile')
 
 class Townsperson(ndb.Model):
   """Models a townsperson in the game"""

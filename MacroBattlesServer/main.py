@@ -5,6 +5,7 @@ import webapp2
 from decisionhandlers import TownspersonHireHandler
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
+from gamelogic import addPlayerToWorld
 
 class LoginHandler(BaseHandler):
   def post(self):
@@ -24,6 +25,11 @@ class TownspersonHandler(BaseHandler):
     self.session['tp_id'] = tp_id
     self.response.write(self.session)
 
+class JoinGameHandler(BaseHandler):
+  def get(self):
+    # TODO, figure out authentication!
+    addPlayerToWorld(self.request.get('username'))
+
 config = {}
 config['webapp2_extras.sessions'] = {'secret_key': 'r7ps9bd6daoc1984shmogogin'}
 app = webapp2.WSGIApplication([
@@ -31,4 +37,5 @@ app = webapp2.WSGIApplication([
   webapp2.Route(r'/register', handler=RegisterHandler, name='register'),
   webapp2.Route(r'/townsperson', handler=TownspersonListHandler, name='tp-list'),
   webapp2.Route(r'/townsperson/<tp_id:\d+>', handler=TownspersonHandler, name='tp'),
+  webapp2.Route(r'/join-game', handler=JoinGameHandler, name='join-game'),
 ], debug=True, config=config)

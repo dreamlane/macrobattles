@@ -6,7 +6,11 @@ import logging
 from google.appengine.ext import ndb
 
 from names import males
-from resource_constants import RESOURCE_TYPES, RESOURCE_PROPERTY_TYPES
+from resource_constants import RESOURCE_TYPES_INT_MAPPING
+from resource_constants import RESOURCE_PROPERTY_TYPES
+from resource_constants import METAL_KEY
+from resource_constants import WOOD_KEY
+from resource_constants import LEATHER_KEY
 
 from models import ResourceTemplate
 from models import TileResource
@@ -19,20 +23,21 @@ from models import Resource
 
 def generateTileResource():
   ## Randomly choose a resource type key.
-  resource_type = choice(RESOURCE_TYPES.keys())
+  resource_type = choice(RESOURCE_TYPES_INT_MAPPING.keys())
   ## Randomly choose a value for each of the resource type's properties.
   properties = {}
   for resource_property in RESOURCE_PROPERTY_TYPES[resource_type]:
     properties[resource_property] = randint(1,999)
-  resource_template = ResourceTemplate(resource_type = resource_type)
+  resource_template = ResourceTemplate(
+      resource_type = RESOURCE_TYPES_INT_MAPPING[resource_type])
 
   # Determine which properties to fill on the resource_template:
-  # TODO: Make this less ugly for the type checking.
-  if resource_type == 0:
+  if resource_type == METAL_KEY:
+    # TODO: Use string properties to remove the if/elif altogether.
     resource_template.metal_properties = properties
-  elif resource_type == 1:
+  elif resource_type == WOOD_KEY:
     resource_template.wood_properties = properties
-  elif resource_type == 2:
+  elif resource_type == LEATHER_KEY:
     resource_template.leather_properties = properties
   else:
     logging.error('Error in the genresourceTemplate')
@@ -90,18 +95,17 @@ def getValuePerUnit(resource):
       @returns the amount of money each unit of resource is worth.
   """
   template = resource.resource_template
-  # TODO: Make this less ugly for the type checking.
   value = 0
-  if template.resource_type == 0: #METAL
+  if template.resource_type == METAL_KEY:
     #TODO: Figure out how to make this more generic.
     value += template.metal_properties.hardness
     value += template.metal_properties.lustre
     value += template.metal_properties.density
-  elif template.resource_type == 1: #WOOD
+  elif template.resource_type == WOOD_KEY:
     value += template.wood_properties.hardness
     value += template.wood_properties.workability
     value += template.wood_properties.figure
-  elif template.resource_type == 2: #LEATHER
+  elif template.resource_type == LEATHER_KEY:
     value += template.leather_properties.durability
     value += template.leather_properties.flexibilty
     value += template.leather_properties.smoothness

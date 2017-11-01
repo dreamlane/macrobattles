@@ -1,8 +1,12 @@
 ## models.py Holds all model information.
 
 from google.appengine.ext import ndb
+from google.appengine.ext.ndb import polymodel
 
+from armor_constants import ARMOR_TYPE_INT_MAPPING
+from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
 from orders_constants import ORDER_TYPE_INT_MAPPING
+from weapon_constants import WEAPON_TYPE_INT_MAPPING
 
 class MetalProperties(ndb.Model):
   """Models the properties that a metal resource has."""
@@ -66,14 +70,17 @@ class Player(ndb.Model):
   # The resources the player owns.
   resources = ndb.KeyProperty(kind='Resource', repeated=True)
 
-  # The home tile for this player
+  # The home tile for this player.
   home_tile = ndb.KeyProperty(kind='MapTile')
 
-  # How much money the player has
+  # How much money the player has.
   money = ndb.IntegerProperty()
 
-  # Units that this player controls
+  # Units that this player controls.
   units = ndb.KeyProperty(kind='Unit', repeated=True)
+
+  # Equipment that this player owns.
+  equipment = ndb.KeyProperty(kind='Equipment', repeated=True)
 
 class MapTile(ndb.Model):
   """Models a map tile in the game"""
@@ -104,28 +111,34 @@ class Unit(ndb.Model):
   # How much health this unit has.
   health = ndb.IntegerProperty()
 
-  # What equipment this unit is carrying
-  equipment = ndb.KeyProperty(kind='Equipment', repeated=True)
+  # What equipment this unit is wearing.
+  weapon = ndb.KeyProperty(kind='Equipment')
+  armor = ndb.KeyProperty(kind='Equipment')
 
   # What tile this unit is currently standing on.
   location_tile = ndb.KeyProperty(kind="MapTile")
 
-class Equipment(ndb.Model):
-  """The top level class for all equipment models in game."""
-  # Which player owns the equipment.
-  player = ndb.KeyProperty(kind=Player)
 
-class Sword(Equipment):
-  """Models a sword in the game."""
-  # How much damage the sword does.
+class Weapon(ndb.Model):
+  """Models a weapon in the game."""
+  # The type of weapon.
+  # 0: Sword
+  weapon_type = ndb.IntegerProperty(choices=WEAPON_TYPE_INT_MAPPING.values())
+
+  # How much damage the weapon does.
   power = ndb.IntegerProperty()
 
-  # How likely the sword is to break after each attack.
+  # How likely the weapon is to break after each attack.
   # This should be a number in range [0, 1].
   reliability = ndb.FloatProperty()
 
-class Armor(Equipment):
+
+class Armor(ndb.Model):
   """Models an armor in the game."""
+  # The type of armor.
+  # 0: Plate
+  armor_type = ndb.IntegerProperty(choices=ARMOR_TYPE_INT_MAPPING.values())
+
   # How much damage it absorbs for the user, as a percentage.
   # This should be a numebr in range [0, 1]. TODO: Make custom property.
   damage_reduction = ndb.FloatProperty()
@@ -133,6 +146,25 @@ class Armor(Equipment):
   # How much more damage the armor can take before breaking.
   # Note: This is not max durability, it is current.
   durability = ndb.IntegerProperty()
+
+
+class Equipment(ndb.Model):
+  """The top level class for all equipment models in game."""
+  # Which type of equipment this is.
+  # 0: Weapon
+  # 1: Armor
+  equipment_type = ndb.IntegerProperty(
+      choices=EQUIPMENT_TYPE_INT_MAPPING.values())
+
+  # Which player owns the equipment.
+  player = ndb.KeyProperty(kind='Player')
+
+  # Weapon data.
+  weapon_data = ndb.StructuredProperty(Weapon)
+
+  # Armor data.
+  armor_data = ndb.StructuredProperty(Armor)
+
 
 class MoveOrder(ndb.Model):
   """Models a move order in the game."""
@@ -142,16 +174,26 @@ class MoveOrder(ndb.Model):
   # The tile to move the unit to.
   destination_map_tile_key = ndb.KeyProperty(kind='MapTile')
 
+class EquipOrder(ndb.Model):
+  """Models an equip order in the game."""
+  # The unit to equip.
+  unit_key = ndb.KeyProperty(kind='Unit')
+
+  # The item to equip.
+  equipment_key = ndb.KeyProperty(kind='Equipment')
+
+
 class Order(ndb.Model):
   """Models an order in the game."""
   # The type of order
   # 0: Move
-  # 1: Equip
-  # 2: Craft
-  # 3: Build Camp
+  # 1: Build Camp
   order_type = ndb.IntegerProperty(choices=ORDER_TYPE_INT_MAPPING.values())
 
   # TODO: Add player.
 
   # The data needed to peform a move order.
   move_order = ndb.StructuredProperty(MoveOrder)
+
+  # The data needed to perform an equip order.
+  equip_order = ndb.StructuredProperty(EquipOrder)

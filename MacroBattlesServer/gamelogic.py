@@ -6,6 +6,9 @@ import logging
 from google.appengine.ext import ndb
 
 from names import males
+from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
+from equipment_constants import ARMOR_KEY
+from equipment_constants import WEAPON_KEY
 from resource_constants import RESOURCE_TYPES_INT_MAPPING
 from resource_constants import RESOURCE_PROPERTY_TYPES
 from resource_constants import METAL_KEY
@@ -17,12 +20,8 @@ from unit_constants import UNIT_BASE_HEALTH
 
 from models import ResourceTemplate
 from models import TileResource
-from models import MetalProperties
-from models import WoodProperties
-from models import LeatherProperties
 from models import MapTile
 from models import Player
-from models import Resource
 from models import Unit
 
 def generateTileResource():
@@ -80,6 +79,7 @@ def addPlayerToWorld(player_key_string):
   # TODO: figure out if this is safe, due to 1 failing, and other succeeding.
   home_tile.is_home_tile = True
   player.home_tile = home_tile.put()
+  player.money = 100
   player.put()
 
 def validateHomeTileSelection(tile):
@@ -155,7 +155,7 @@ def hireUnit(player_key_string, unit_type_string):
   # TODO: replace this with a function that does this common thing.
   player = ndb.Key(urlsafe=player_key_string).get()
   unit_cost = UNIT_COSTS[unit_type_string]
-  if player.money > unit_cost:
+  if player.money >= unit_cost:
     player.money -= unit_cost
     player.units.append(Unit(
       unit_type = UNIT_TYPES_INT_MAPPING[unit_type_string],
@@ -165,19 +165,61 @@ def hireUnit(player_key_string, unit_type_string):
     ).put())
     player.put()
     logging.info('unit added')
+  else:
+    logging.error('unit too expensive')
 
-def testGivePlayerResource(player_key_string):
-  player = ndb.Key(urlsafe=player_key_string).get()
-  player.resources.append(Resource(
-        resource_template = ResourceTemplate(
-            resource_type = 0,
-            metal_properties = MetalProperties(
-                hardness = 200,
-                lustre = 400,
-                density = 600,
-            ),
-            name = 'testMetal'
-        ),
-        quantity = 150
-    ).put())
+def isUnitOnHomeTile(unit):
+  # TODO: Move this to a util file?
+  player = unit.unit_owner.get()
+  return player.home_tile == unit.location_tile
+
+def playerHasEquipment(player, equipment_key):
+  # TODO: move this to a util file?
+  return equipment_key in player.equipment
+
+def equipUnit(unit_id, equipment_id):
+  # TODO: Handle invalid keys.
+  unit_key = ndb.Key(urlsafe=unit_id)
+  equipment_key = ndb.Key(urlsafe=equipment_id)
+  unit = unit_key.get()
+  # Make sure the unit is standing at home, otherwise it cannot be equiped.
+  if not isUnitOnHomeTile(unit):
+    # TODO: write an error response.
+    logging.error('cannot equip unit, not on home tile')
+    return None
+
+  # Make sure the player has the equipment.
+  player = unit.unit_owner.get()
+  if not playerHasEquipment(player, equipment_key):
+    # TODO: write an error response
+    logging.error('cannot equip unit, player does not have equipment')
+    return None
+
+  # Handle case where Unit already has equipment equiped.
+  current_equipment_key = None
+  # TODO: Error handle this, to make sure it is equipment, and not a subclass.
+  equipment = equipment_key.get()
+  if equipment.equipment_type == EQUIPMENT_TYPE_INT_MAPPING[ARMOR_KEY]:
+    current_equipment_key = unit.armor
+    logging.info('unit armor key: ' + str(unit.armor))
+    unit.armor = equipment_key
+    logging.info('unit armor key after: ' + str(unit.armor))
+    # Remove the equipment from the list.
+    player.equipment.remove(equipment_key)
+  elif equipment.equipment_type == EQUIPMENT_TYPE_INT_MAPPING[WEAPON_KEY]:
+    current_equipment_key = unit.weapon
+    logging.info('unit weapon key: ' + str(unit.weapon))
+    unit.weapon = equipment_key
+    logging.info('unit weapon key after: ' + str(unit.weapon))
+    player.equipment.remove(equipment_key)
+  else:
+    logging.error('equipment kind matching failed')
+    return None
+  # If the unit already has something equiped, put that equipment back on the
+  # player's equipment list.
+  if current_equipment_key != None:
+    player.equipment.append(current_equipment_key)
+
+  # TODO: make sure this is transactional with the player put.
+  unit.put()
   player.put()

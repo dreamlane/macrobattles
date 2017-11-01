@@ -9,6 +9,9 @@
       - Craft an Item
     There are actions that can occur in real-time (not turn-based). Those
     actions are handled elsewhere.
+
+    Any action that can affect the outcome of a multi-player interaction should
+    be implemented as an Order.
 """
 import logging
 

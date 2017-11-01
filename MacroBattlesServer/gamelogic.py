@@ -48,8 +48,8 @@ def generateTileResource():
   resource_template.name = choice(males)
 
   return TileResource(
-    resource_template = resource_template,
-    saturation = randint(1,99))
+    resource_template = resource_template.put(),
+    saturation = randint(1,99)).put()
 
 def generateMapTiles():
   map_tile_models = []

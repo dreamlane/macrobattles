@@ -6,6 +6,7 @@ from google.appengine.ext.ndb import polymodel
 from armor_constants import ARMOR_TYPE_INT_MAPPING
 from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
 from orders_constants import ORDER_TYPE_INT_MAPPING
+from player_structure_constants import PLAYER_STRUCTURE_TYPE_INT_MAPPING
 from weapon_constants import WEAPON_TYPE_INT_MAPPING
 
 class MetalProperties(ndb.Model):
@@ -48,7 +49,7 @@ class ResourceTemplate(ndb.Model):
 class TileResource(ndb.Model):
   """Models a resource on the game map tiles."""
   # Which resource it is.
-  resource_template = ndb.StructuredProperty(ResourceTemplate)
+  resource_template = ndb.KeyProperty(kind='ResourceTemplate')
 
   # How much of the resource there is.
   saturation = ndb.IntegerProperty()
@@ -56,7 +57,7 @@ class TileResource(ndb.Model):
 class Resource(ndb.Model):
   """Models a stack of resources in the game"""
   # The template describing the resource.
-  resource_template = ndb.StructuredProperty(ResourceTemplate)
+  resource_template = ndb.KeyProperty(kind='ResourceTemplate')
 
   # The amount of the resource held by the player.
   quantity = ndb.IntegerProperty()
@@ -89,13 +90,19 @@ class MapTile(ndb.Model):
   coordinate_y = ndb.IntegerProperty()
 
   # The Resources available to gather from the tile.
-  resources = ndb.StructuredProperty(TileResource, repeated=True)
+  resources = ndb.KeyProperty(kind='TileResource', repeated=True)
 
   # Whether or not this tile is a home tile for a player.
   is_home_tile = ndb.BooleanProperty()
 
   # Armies that are currently present on this tile.
   units_on_tile = ndb.KeyProperty(kind='Unit', repeated=True)
+
+  # Whether or not the tile is contested.
+  is_contested = ndb.BooleanProperty()
+
+  # What structure is on the tile.
+  structure = ndb.KeyProperty(kind='PlayerStructure')
 
 class Unit(ndb.Model):
   """Models a player-owned unit in the game."""
@@ -174,14 +181,13 @@ class MoveOrder(ndb.Model):
   # The tile to move the unit to.
   destination_map_tile_key = ndb.KeyProperty(kind='MapTile')
 
-class EquipOrder(ndb.Model):
-  """Models an equip order in the game."""
-  # The unit to equip.
+class BuildCampOrder(ndb.Model):
+  """Models a build camp order in the game."""
+  # The unit that will build the camp.
   unit_key = ndb.KeyProperty(kind='Unit')
 
-  # The item to equip.
-  equipment_key = ndb.KeyProperty(kind='Equipment')
-
+  # The resource that the camp will harvest.
+  tile_resource_key = ndb.KeyProperty(kind='TileResource')
 
 class Order(ndb.Model):
   """Models an order in the game."""
@@ -195,5 +201,29 @@ class Order(ndb.Model):
   # The data needed to peform a move order.
   move_order = ndb.StructuredProperty(MoveOrder)
 
-  # The data needed to perform an equip order.
-  equip_order = ndb.StructuredProperty(EquipOrder)
+  # The data needed to perform a build camp order.
+  build_camp_order = ndb.StructuredProperty(BuildCampOrder)
+
+class HarvestingCamp(ndb.Model):
+  """Models a Harvesting Camp player structure."""
+  # Where the camp is located on the map.
+  location = ndb.KeyProperty(kind="MapTile")
+
+  # Which resource the camp is harvesting.
+  tile_resource = ndb.KeyProperty(kind='TileResource')
+
+class PlayerStructure(ndb.Model):
+  """Models anything that a player can build in the world."""
+  # Type of structure.
+  # 0: Harvesting Camp
+  structure_type = ndb.IntegerProperty(
+      choices=PLAYER_STRUCTURE_TYPE_INT_MAPPING.values())
+
+  # Which player owns this camp.
+  owner_key = ndb.KeyProperty(kind='Player')
+
+  # Harvesting camp data
+  harvesting_camp_data = ndb.StructuredProperty(HarvestingCamp)
+
+  # How much damage the structure must take before it is destroyed.
+  health = ndb.IntegerProperty()

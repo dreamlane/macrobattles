@@ -17,11 +17,15 @@ import logging
 
 from google.appengine.ext import ndb
 
+from models import BuildCampOrder
 from models import MoveOrder
 from models import Order
 
 from orders_constants import MOVE_KEY
+from orders_constants import BUILD_CAMP_KEY
 from orders_constants import ORDER_TYPE_INT_MAPPING
+from unit_constants import WORKER_KEY
+from unit_constants import UNIT_TYPES_INT_MAPPING
 
 def isMoveValid(unit, target_tile):
   # Get the unit position
@@ -55,3 +59,43 @@ def handleUnitMoveRequest(unit_id, target_tile_id):
       )).put()
   else:
     logging.error('order not created, because move was not valid')
+
+def isCampBuildValid(unit, tile_resource_key):
+  # TODO: Move this to a Util file?
+  # Check if the unit is a worker.
+  if unit.unit_type != UNIT_TYPES_INT_MAPPING[WORKER_KEY]:
+    logging.error('Unit is not a worker.')
+    return False
+
+  # Check if the tile is contested.
+  tile = unit.location_tile.get()
+  if tile.is_contested:
+    logging.error('Unit is on a contested tile.')
+    return False
+
+  # Check if there is already a structure on the tile.
+  if tile.structure:
+    logging.error('Tile already has a structure.')
+    return False
+
+  # Check if the selected resource is valid.
+  if tile_resource_key not in tile.resources:
+    logging.error('Selected resource not available.')
+    return False
+
+  return True
+
+def handleBuildCampOrderRequest(unit_id, tile_resource_id):
+  # TODO: Handle invalid keys.
+  unit_key = ndb.Key(urlsafe=unit_id)
+  tile_resource_key = ndb.Key(urlsafe=tile_resource_id)
+
+  if isCampBuildValid(unit_key.get(), tile_resource_key):
+    Order(
+      order_type = ORDER_TYPE_INT_MAPPING[BUILD_CAMP_KEY],
+      build_camp_order = BuildCampOrder(
+        unit_key = unit_key,
+        tile_resource_key = tile_resource_key
+      )
+    ).put()
+  # TODO: return something useful.

@@ -67,17 +67,8 @@ class Player(ndb.Model):
   # The home tile for this player
   home_tile = ndb.KeyProperty(kind='MapTile')
 
-class Townsperson(ndb.Model):
-  """Models a townsperson in the game"""
-  # The name of the townsperson, randomly chosen from names.py
-  name = ndb.StringProperty(indexed=False)
-  # The player who is allowed to hire this individual.
-  player = ndb.KeyProperty(kind=Player)
-  # The cost to hire this townsperson.
-  cost = ndb.IntegerProperty()
-  strength = ndb.IntegerProperty()
-  dexterity = ndb.IntegerProperty()
-  intelligence = ndb.IntegerProperty()
+  # How much money the player has
+  money = ndb.IntegerProperty()
 
 class MapTile(ndb.Model):
   """Models a map tile in the game"""

@@ -35,6 +35,7 @@ class UserLoginHandler():
     # TODO: add password length verification.
 
     # Check for username collision
+    # TODO: Do a transaction here with username as part of the key.
     query = Player.query(Player.username == username)
     if query.count() > 0:
       response.setErrorMessage('The username is already in use.')

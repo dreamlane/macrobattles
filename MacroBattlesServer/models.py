@@ -2,6 +2,8 @@
 
 from google.appengine.ext import ndb
 
+from orders_constants import ORDER_TYPE_INT_MAPPING
+
 class MetalProperties(ndb.Model):
   """Models the properties that a metal resource has."""
   hardness = ndb.IntegerProperty()
@@ -70,6 +72,9 @@ class Player(ndb.Model):
   # How much money the player has
   money = ndb.IntegerProperty()
 
+  # Units that this player controls
+  units = ndb.KeyProperty(kind='Unit', repeated=True)
+
 class MapTile(ndb.Model):
   """Models a map tile in the game"""
   # The X and Y coordinates of the tile in the game map.
@@ -88,9 +93,9 @@ class MapTile(ndb.Model):
 class Unit(ndb.Model):
   """Models a player-owned unit in the game."""
   # What type of unit it is.
-  # 0 = Unknown
-  # 1 = Worker
-  # 2 = Soldier
+  # 0 = Worker
+  # 1 = Soldier
+  # See unit_constants.py for mapping.
   unit_type = ndb.IntegerProperty()
 
   # Who owns this unit.
@@ -101,6 +106,9 @@ class Unit(ndb.Model):
 
   # What equipment this unit is carrying
   equipment = ndb.KeyProperty(kind='Equipment', repeated=True)
+
+  # What tile this unit is currently standing on.
+  location_tile = ndb.KeyProperty(kind="MapTile")
 
 class Equipment(ndb.Model):
   """The top level class for all equipment models in game."""
@@ -125,3 +133,25 @@ class Armor(Equipment):
   # How much more damage the armor can take before breaking.
   # Note: This is not max durability, it is current.
   durability = ndb.IntegerProperty()
+
+class MoveOrder(ndb.Model):
+  """Models a move order in the game."""
+  # The unit to move.
+  unit_key = ndb.KeyProperty(kind='Unit')
+
+  # The tile to move the unit to.
+  destination_map_tile_key = ndb.KeyProperty(kind='MapTile')
+
+class Order(ndb.Model):
+  """Models an order in the game."""
+  # The type of order
+  # 0: Move
+  # 1: Equip
+  # 2: Craft
+  # 3: Build Camp
+  order_type = ndb.IntegerProperty(choices=ORDER_TYPE_INT_MAPPING.values())
+
+  # TODO: Add player.
+
+  # The data needed to peform a move order.
+  move_order = ndb.StructuredProperty(MoveOrder)

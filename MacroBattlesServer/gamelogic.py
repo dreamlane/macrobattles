@@ -11,6 +11,9 @@ from resource_constants import RESOURCE_PROPERTY_TYPES
 from resource_constants import METAL_KEY
 from resource_constants import WOOD_KEY
 from resource_constants import LEATHER_KEY
+from unit_constants import UNIT_TYPES_INT_MAPPING
+from unit_constants import UNIT_COSTS
+from unit_constants import UNIT_BASE_HEALTH
 
 from models import ResourceTemplate
 from models import TileResource
@@ -20,6 +23,7 @@ from models import LeatherProperties
 from models import MapTile
 from models import Player
 from models import Resource
+from models import Unit
 
 def generateTileResource():
   ## Randomly choose a resource type key.
@@ -63,7 +67,7 @@ def generateMapTiles():
       ))
   ndb.put_multi(map_tile_models)
 
-def addPlayerToWorld(player_id):
+def addPlayerToWorld(player_key_string):
   map_query = MapTile.query()
   map_tiles = map_query.fetch(map_query.count())
   home_tile = choice(map_tiles)
@@ -71,16 +75,12 @@ def addPlayerToWorld(player_id):
     # TODO: guard against infinite loop
     home_tile = choice(map_tiles)
     logging.info('trying again')
-  # Get player
-  player_query = Player.query(Player.username == player_id)
-  if player_query.count() > 0:
-    player = player_query.get()
-    # TODO: figure out if this is safe, due to 1 failing, and other succeeding.
-    home_tile.is_home_tile = True
-    player.home_tile = home_tile.put()
-    player.put()
-  else:
-    logging.error('no playoooooor')
+
+  player = ndb.Key(urlsafe=player_key_string).get()
+  # TODO: figure out if this is safe, due to 1 failing, and other succeeding.
+  home_tile.is_home_tile = True
+  player.home_tile = home_tile.put()
+  player.put()
 
 def validateHomeTileSelection(tile):
   return not tile.is_home_tile
@@ -146,6 +146,25 @@ def sellResource(player_key_string, resource_key_string, quantity_string):
     logging.info("successful sale")
   else:
     logging.info('quantity wrong or resource quantity too low' + str(quantity) + str(resource.quantity))
+
+def hireUnit(player_key_string, unit_type_string):
+  """
+     @param player_key_string urlsafe key string for models.Player ndb model.
+     @param unit_type_string which unit type to hire.
+  """
+  # TODO: replace this with a function that does this common thing.
+  player = ndb.Key(urlsafe=player_key_string).get()
+  unit_cost = UNIT_COSTS[unit_type_string]
+  if player.money > unit_cost:
+    player.money -= unit_cost
+    player.units.append(Unit(
+      unit_type = UNIT_TYPES_INT_MAPPING[unit_type_string],
+      unit_owner = ndb.Key(urlsafe=player_key_string),
+      health = UNIT_BASE_HEALTH[unit_type_string],
+      location_tile = player.home_tile
+    ).put())
+    player.put()
+    logging.info('unit added')
 
 def testGivePlayerResource(player_key_string):
   player = ndb.Key(urlsafe=player_key_string).get()

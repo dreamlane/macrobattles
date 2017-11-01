@@ -7,6 +7,9 @@ handlers:
   script: admin.app
   login: admin
 
+- url: /orders/.*
+  script: orders.app
+
 - url: /.*
   script: main.app
 

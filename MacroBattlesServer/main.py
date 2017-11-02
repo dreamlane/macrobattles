@@ -1,10 +1,12 @@
 ## main.py Handles all of the request routing for the server.
 
+import json
 import logging
 import webapp2
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
 from gamelogic import addPlayerToWorld
+from gamelogic import craftItem
 from gamelogic import sellResource
 from gamelogic import hireUnit
 from gamelogic import equipUnit
@@ -44,6 +46,14 @@ class EquipUnitHandler(BaseHandler):
     # TODO: write response
     equipUnit(unit_id, equipment_id)
 
+class CraftEquipmentHandler(BaseHandler):
+  def post(self):
+    # TODO: handle auth/session.
+    # TODO: handle invalid json
+    inputs = json.loads(self.request.body)
+    # TODO: write response.
+    craftItem(inputs)
+
 config = {}
 config['webapp2_extras.sessions'] = {'secret_key': 'r7ps9bd6daoc1984shmogogin'}
 app = webapp2.WSGIApplication([
@@ -53,4 +63,5 @@ app = webapp2.WSGIApplication([
   webapp2.Route(r'/sell-resource', handler=SellResourceHandler, name='sell-resource'),
   webapp2.Route(r'/hire-unit', handler=HireUnitHandler, name='hire-unit'),
   webapp2.Route(r'/equip-unit', handler=EquipUnitHandler, name='equip-unit'),
+  webapp2.Route(r'/craft-equipment', handler=CraftEquipmentHandler, name='craft-equipment'),
 ], debug=True, config=config)

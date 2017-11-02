@@ -16,14 +16,14 @@ def testGivePlayerResource(player_key_string):
   player = ndb.Key(urlsafe=player_key_string).get()
   player.resources.append(Resource(
         resource_template = ResourceTemplate(
-            resource_type = 0,
-            metal_properties = MetalProperties(
-                hardness = 200,
-                lustre = 400,
-                density = 600,
+            resource_type = 2,
+            leather_properties = LeatherProperties(
+                durability = 200,
+                flexibility = 400,
+                smoothness = 600,
             ),
-            name = 'testMetal'
-        ),
+            name = 'testLeather'
+        ).put(),
         quantity = 150
     ).put())
   player.put()

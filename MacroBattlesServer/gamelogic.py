@@ -6,8 +6,10 @@ import logging
 from google.appengine.ext import ndb
 
 from names import males
-from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
 from equipment_constants import ARMOR_KEY
+from equipment_constants import EQUIPMENT_TEMPLATE_CRAFT_COSTS
+from equipment_constants import EQUIPMENT_TEMPLATE_TO_TYPE_MAPPING
+from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
 from equipment_constants import WEAPON_KEY
 from resource_constants import RESOURCE_TYPES_INT_MAPPING
 from resource_constants import RESOURCE_PROPERTY_TYPES
@@ -18,10 +20,11 @@ from unit_constants import UNIT_TYPES_INT_MAPPING
 from unit_constants import UNIT_COSTS
 from unit_constants import UNIT_BASE_HEALTH
 
-from models import ResourceTemplate
-from models import TileResource
+from models import Equipment
 from models import MapTile
 from models import Player
+from models import ResourceTemplate
+from models import TileResource
 from models import Unit
 
 def generateTileResource():
@@ -223,3 +226,83 @@ def equipUnit(unit_id, equipment_id):
   # TODO: make sure this is transactional with the player put.
   unit.put()
   player.put()
+
+def craftItem(inputs):
+  """ @param inputs a json object with inputs."""
+  # TODO: Break up this code into functional pieces, and move into craftinglogic.py
+  # TODO: Validate inputs.
+  equipment_template_key = inputs['equipment_template_key']
+  # Make sure the player has all of the necessary resources.
+  cost_to_craft = EQUIPMENT_TEMPLATE_CRAFT_COSTS[equipment_template_key]
+  player_key = ndb.Key(urlsafe=inputs['player_id']) # TODO: error handle.
+  player = player_key.get()
+  resources_to_put = []
+  # TODO: Make this more generic, instead of checking each. DRY this up.
+  if cost_to_craft.metal > 0:
+    # Check for adequate metal resources.
+    # TODO: validate the input!
+    resource_key = ndb.Key(urlsafe=inputs['metal_resource_key'])
+    if resource_key in player.resources:
+      resource = resource_key.get()
+      template = resource.resource_template.get()
+      if (resource.quantity >= cost_to_craft.metal and
+          template.resource_type == RESOURCE_TYPES_INT_MAPPING[METAL_KEY]):
+        resource.quantity -= cost_to_craft.metal
+        resources_to_put.append(resource)
+        # TODO: Add crafting power formulas logic here!
+      else:
+        logging.error('Metal Quantity too low, or resource is not metal!')
+        # TODO: handle failure better than returning none.
+        return None
+    else:
+      logging.error('Player does not own metal resource!')
+      # TODO: handle failure better than returning none.
+      return None
+  if cost_to_craft.wood > 0:
+    # Check for adequate wood resources.
+    # TODO: validate the input!
+    resource_key = ndb.Key(urlsafe=inputs['wood_resource_key'])
+    if resource_key in player.resources:
+      resource = resource_key.get()
+      template = resource.resource_template.get()
+      if (resource.quantity >= cost_to_craft.wood and
+          template.resource_type == RESOURCE_TYPES_INT_MAPPING[WOOD_KEY]):
+        resource.quantity -= cost_to_craft.wood
+        resources_to_put.append(resource)
+        # TODO: Add crafting power formulas logic here!
+      else:
+        logging.error('Wood Quantity too low, or resource is not wood!')
+        # TODO: handle failure better than returning none.
+        return None
+    else:
+      logging.error('Player does not own wood resource!')
+      # TODO: handle failure better than returning none.
+      return None
+  if cost_to_craft.leather > 0:
+    # Check for adequate leather resources.
+    # TODO: validate the input!
+    resource_key = ndb.Key(urlsafe=inputs['leather_resource_key'])
+    if resource_key in player.resources:
+      resource = resource_key.get()
+      template = resource.resource_template.get()
+      if (resource.quantity >= cost_to_craft.leather and
+          template.resource_type == RESOURCE_TYPES_INT_MAPPING[LEATHER_KEY]):
+        resource.quantity -= cost_to_craft.leather
+        resources_to_put.append(resource)
+        # TODO: Add crafting power formulas logic here!
+      else:
+        logging.error('Leather Quantity too low, or resource is not leather!')
+        # TODO: handle failure better than returning none.
+        return None
+    else:
+      logging.error('Player does not own leather resource!')
+      # TODO: handle failure better than returning none.
+      return None
+
+  # Validation has passed. Create the equipment.
+  equipment_type = EQUIPMENT_TEMPLATE_TO_TYPE_MAPPING[equipment_template_key]
+  crafted_equipment = Equipment(
+    equipment_type = equipment_type,
+    player = player_key)
+
+  # TODO: Do type specific stuff here. and then put() the equipment

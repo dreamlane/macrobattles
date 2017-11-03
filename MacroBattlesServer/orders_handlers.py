@@ -28,12 +28,14 @@ from unit_constants import WORKER_KEY
 from unit_constants import UNIT_TYPES_INT_MAPPING
 
 def isMoveValid(unit, target_tile):
-  # Get the unit position
   # TODO: Add error checking.
-  if target_tile.is_home_tile: # If tile is a hometile, cannot move onto.
-    logging.info('the target is a home tile')
+
+  Player owner = unit.unit_owner;
+  if target_tile.is_home_tile or not owner.hometile == target_tile: 
+    logging.info('the target is a home tile not owned by the player')
     return False;
 
+  # Get the unit position
   unit_tile = unit.location_tile.get()
   unit_x, unit_y = unit_tile.coordinate_x, unit_tile.coordinate_y
   # Get target position

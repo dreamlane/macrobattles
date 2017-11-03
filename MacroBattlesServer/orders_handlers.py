@@ -30,7 +30,10 @@ from unit_constants import UNIT_TYPES_INT_MAPPING
 def isMoveValid(unit, target_tile):
   # Get the unit position
   # TODO: Add error checking.
-  # TODO: Add home tile check, so players home tile will be safe.
+  if target_tile.is_home_tile: # If tile is a hometile, cannot move onto.
+    logging.info('the target is a home tile')
+    return False;
+
   unit_tile = unit.location_tile.get()
   unit_x, unit_y = unit_tile.coordinate_x, unit_tile.coordinate_y
   # Get target position

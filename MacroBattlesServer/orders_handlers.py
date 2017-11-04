@@ -31,8 +31,8 @@ def isMoveValid(unit, target_tile):
   # TODO: Add error checking.
 
   Player owner = unit.unit_owner;
-  if target_tile.is_home_tile or not owner.hometile == target_tile: 
-    logging.info('the target is a home tile not owned by the player')
+  if target_tile.is_home_tile and owner.hometile != target_tile:
+    logging.info('The target is a home tile not owned by the player')
     return False;
 
   # Get the unit position

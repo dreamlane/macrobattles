@@ -1,4 +1,4 @@
-## equipment_constants.py
+## constants_equipment.py
 """ This file defines all of the constant values for equipment. """
 
 """ The keys for the types of equipment. """

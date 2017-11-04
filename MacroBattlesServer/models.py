@@ -3,10 +3,10 @@
 from google.appengine.ext import ndb
 from google.appengine.ext.ndb import polymodel
 
-from armor_constants import ARMOR_TYPE_INT_MAPPING
-from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
-from orders_constants import ORDER_TYPE_INT_MAPPING
-from player_structure_constants import PLAYER_STRUCTURE_TYPE_INT_MAPPING
+from constants_armor import ARMOR_TYPE_INT_MAPPING
+from constants_equipment import EQUIPMENT_TYPE_INT_MAPPING
+from constants_orders import ORDER_TYPE_INT_MAPPING
+from constants_structures import STRUCTURE_TYPE_INT_MAPPING
 from weapon_constants import WEAPON_TYPE_INT_MAPPING
 
 class MetalProperties(ndb.Model):
@@ -109,11 +109,11 @@ class Unit(ndb.Model):
   # What type of unit it is.
   # 0 = Worker
   # 1 = Soldier
-  # See unit_constants.py for mapping.
+  # See constants_units.py for mapping.
   unit_type = ndb.IntegerProperty()
 
   # Who owns this unit.
-  unit_owner = ndb.KeyProperty(kind=Player)
+  unit_owner_key = ndb.KeyProperty(kind='Player')
 
   # How much health this unit has.
   health = ndb.IntegerProperty()
@@ -206,18 +206,15 @@ class Order(ndb.Model):
 
 class HarvestingCamp(ndb.Model):
   """Models a Harvesting Camp player structure."""
-  # Where the camp is located on the map.
-  location = ndb.KeyProperty(kind="MapTile")
-
   # Which resource the camp is harvesting.
-  tile_resource = ndb.KeyProperty(kind='TileResource')
+  tile_resource_key = ndb.KeyProperty(kind='TileResource')
 
 class PlayerStructure(ndb.Model):
   """Models anything that a player can build in the world."""
   # Type of structure.
   # 0: Harvesting Camp
   structure_type = ndb.IntegerProperty(
-      choices=PLAYER_STRUCTURE_TYPE_INT_MAPPING.values())
+      choices=STRUCTURE_TYPE_INT_MAPPING.values())
 
   # Which player owns this camp.
   owner_key = ndb.KeyProperty(kind='Player')
@@ -227,3 +224,6 @@ class PlayerStructure(ndb.Model):
 
   # How much damage the structure must take before it is destroyed.
   health = ndb.IntegerProperty()
+
+  # Where the structure is located on the map.
+  location = ndb.KeyProperty(kind="MapTile")

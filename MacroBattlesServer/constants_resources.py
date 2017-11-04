@@ -1,4 +1,4 @@
-## resource_constants.py
+## constants_resources.py
 """ This file defines all of the constant values for resources."""
 
 """ The keys for the types of resources. """

@@ -6,19 +6,19 @@ import logging
 from google.appengine.ext import ndb
 
 from names import males
-from equipment_constants import ARMOR_KEY
-from equipment_constants import EQUIPMENT_TEMPLATE_CRAFT_COSTS
-from equipment_constants import EQUIPMENT_TEMPLATE_TO_TYPE_MAPPING
-from equipment_constants import EQUIPMENT_TYPE_INT_MAPPING
-from equipment_constants import WEAPON_KEY
-from resource_constants import RESOURCE_TYPES_INT_MAPPING
-from resource_constants import RESOURCE_PROPERTY_TYPES
-from resource_constants import METAL_KEY
-from resource_constants import WOOD_KEY
-from resource_constants import LEATHER_KEY
-from unit_constants import UNIT_TYPES_INT_MAPPING
-from unit_constants import UNIT_COSTS
-from unit_constants import UNIT_BASE_HEALTH
+from constants_equipment import ARMOR_KEY
+from constants_equipment import EQUIPMENT_TEMPLATE_CRAFT_COSTS
+from constants_equipment import EQUIPMENT_TEMPLATE_TO_TYPE_MAPPING
+from constants_equipment import EQUIPMENT_TYPE_INT_MAPPING
+from constants_equipment import WEAPON_KEY
+from constants_resources import RESOURCE_TYPES_INT_MAPPING
+from constants_resources import RESOURCE_PROPERTY_TYPES
+from constants_resources import METAL_KEY
+from constants_resources import WOOD_KEY
+from constants_resources import LEATHER_KEY
+from constants_units import UNIT_TYPE_INT_MAPPING
+from constants_units import UNIT_COSTS
+from constants_units import UNIT_BASE_HEALTH
 
 from models import Equipment
 from models import MapTile
@@ -161,8 +161,8 @@ def hireUnit(player_key_string, unit_type_string):
   if player.money >= unit_cost:
     player.money -= unit_cost
     player.units.append(Unit(
-      unit_type = UNIT_TYPES_INT_MAPPING[unit_type_string],
-      unit_owner = ndb.Key(urlsafe=player_key_string),
+      unit_type = UNIT_TYPE_INT_MAPPING[unit_type_string],
+      unit_owner_key = ndb.Key(urlsafe=player_key_string),
       health = UNIT_BASE_HEALTH[unit_type_string],
       location_tile = player.home_tile
     ).put())

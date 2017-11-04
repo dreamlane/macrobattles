@@ -5,8 +5,10 @@ from google.appengine.ext import ndb
 
 from models import Armor
 from models import Equipment
+from models import HarvestingCamp
 from models import MetalProperties
 from models import LeatherProperties
+from models import PlayerStructure
 from models import Resource
 from models import ResourceTemplate
 from models import Weapon
@@ -45,3 +47,20 @@ def testGivePlayerEquipment(player_key_string):
     reliability = 0.995),
   ).put())
   player.put()
+
+def testPutCampOnSpot(
+      player_key_string,
+      map_tile_key_string,
+      tile_resource_key_string):
+  player_key = ndb.Key(urlsafe=player_key_string)
+  map_tile_key = ndb.Key(urlsafe=map_tile_key_string)
+  tile_resource_key = ndb.Key(urlsafe=tile_resource_key_string)
+  strucutre_key = PlayerStructure(
+    structure_type = 0,
+    owner_key = player_key,
+    harvesting_camp_data = HarvestingCamp(
+      tile_resource_key = tile_resource_key
+    ),
+    health = 100,
+    location = map_tile_key
+  ).put()

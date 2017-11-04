@@ -1,11 +1,11 @@
-## unit_constants.py
+## constants_units.py
 """ This file defines all of the constant values for units."""
 
 WORKER_KEY = "WORKER"
 SOLDIER_KEY = "SOLDIER"
 
 """ The key-value pairs for types of resources."""
-UNIT_TYPES_INT_MAPPING = {
+UNIT_TYPE_INT_MAPPING = {
   WORKER_KEY: 0,
   SOLDIER_KEY: 1
 }

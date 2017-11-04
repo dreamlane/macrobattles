@@ -1,4 +1,4 @@
-## armor_constants.py
+## constant_armor.py
 """ This file defines all of the constant values for armors. """
 
 """ The keys for the types of armors. """

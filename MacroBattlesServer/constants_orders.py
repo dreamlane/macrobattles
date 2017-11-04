@@ -1,4 +1,4 @@
-## orders_constants.py
+## constants_orders.py
 """ This file defines all of the constant values for orders. """
 
 """ The keys for the types of orders. """

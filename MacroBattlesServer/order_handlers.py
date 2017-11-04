@@ -21,16 +21,16 @@ from models import BuildCampOrder
 from models import MoveOrder
 from models import Order
 
-from orders_constants import MOVE_KEY
-from orders_constants import BUILD_CAMP_KEY
-from orders_constants import ORDER_TYPE_INT_MAPPING
-from unit_constants import WORKER_KEY
-from unit_constants import UNIT_TYPES_INT_MAPPING
+from constants_orders import MOVE_KEY
+from constants_orders import BUILD_CAMP_KEY
+from constants_orders import ORDER_TYPE_INT_MAPPING
+from constants_units import WORKER_KEY
+from constants_units import UNIT_TYPE_INT_MAPPING
 
 def isMoveValid(unit, target_tile):
   # TODO: Add error checking.
 
-  Player owner = unit.unit_owner;
+  owner = unit.unit_owner_key.get();
   if target_tile.is_home_tile and owner.hometile != target_tile:
     logging.info('The target is a home tile not owned by the player')
     return False;
@@ -68,7 +68,7 @@ def handleUnitMoveRequest(unit_id, target_tile_id):
 def isCampBuildValid(unit, tile_resource_key):
   # TODO: Move this to a Util file?
   # Check if the unit is a worker.
-  if unit.unit_type != UNIT_TYPES_INT_MAPPING[WORKER_KEY]:
+  if unit.unit_type != UNIT_TYPE_INT_MAPPING[WORKER_KEY]:
     logging.error('Unit is not a worker.')
     return False
 

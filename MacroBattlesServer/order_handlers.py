@@ -27,10 +27,52 @@ from constants_orders import ORDER_TYPE_INT_MAPPING
 from constants_units import WORKER_KEY
 from constants_units import UNIT_TYPE_INT_MAPPING
 
+class OrderHandler():
+  """
+    The order Handler class will keep the list of orders, and provide storage
+    functionality as needed.
+    NOTE: This code is unused, and is just an idea for if simple ndb commands
+    end up being too costly. This layer can be used to reduce the number of
+    read/write requests.
+  """
+
+  def __init__(self, orders={}):
+    """
+      @param orders A dictionary of orders, where the key is the turn, and the
+                    value is a list of Order models. It should be used to when
+                    initializing the OrderHandler from an already stored set of
+                    orders in the DB.
+    """
+    self.orders = orders
+
+  def addOrder(turn, order):
+    """
+      Adds an order to the local cache.
+      @param turn An integer that represents the turn that the order will be
+                  executed on.
+      @param order An Order model.
+    """
+    # If the turn is already in the orders cache, add this order to it.
+    if turn in self.orders:
+      self.orders[turn].append(Order)
+    # If the turn is not in the cache yet, add it with the order.
+    else:
+      self.orders[turn] = [order]
+
+  def _removeTurnFromCache(turn):
+    """
+      Removes the turn from the cache. This should only be used after a turn has
+      been completed, and all of it's orders have been completed.
+      @param turn An integer that represents the turn as a key in the cache. All
+                  orders from the given turn will be deleted.
+    """
+    if turn in self.orders:
+      del self.orders[turn]
+
 def isMoveValid(unit, target_tile):
   # TODO: Add error checking.
 
-  owner = unit.unit_owner_key.get();
+  owner = unit.owner_key.get();
   if target_tile.is_home_tile and owner.hometile != target_tile:
     logging.info('The target is a home tile not owned by the player')
     return False;
@@ -52,14 +94,18 @@ def isMoveValid(unit, target_tile):
 def handleUnitMoveRequest(unit_id, target_tile_id):
   # TODO: Handle invalid keys.
   unit_key = ndb.Key(urlsafe=unit_id)
+  unit = unit_key.get()
+  if unit.has_order:
+    logging.error('The unit already has an order')
+    return
   tile_key = ndb.Key(urlsafe=target_tile_id)
   # TODO: Handle checking that the unit doesn't already have an order.
   # Check if the movement is valid
   if isMoveValid(unit_key.get(), tile_key.get()):
     Order(
       order_type = ORDER_TYPE_INT_MAPPING[MOVE_KEY],
+      unit_key = unit_key,
       move_order = MoveOrder(
-        unit_key = unit_key,
         destination_map_tile_key = tile_key
       )).put()
   else:
@@ -79,7 +125,7 @@ def isCampBuildValid(unit, tile_resource_key):
     return False
 
   # Check if there is already a structure on the tile.
-  if tile.structure:
+  if tile.has_structure:
     logging.error('Tile already has a structure.')
     return False
 
@@ -93,14 +139,20 @@ def isCampBuildValid(unit, tile_resource_key):
 def handleBuildCampOrderRequest(unit_id, tile_resource_id):
   # TODO: Handle invalid keys.
   unit_key = ndb.Key(urlsafe=unit_id)
+  unit = unit_key.get()
+  if unit.has_order:
+    logging.error('The unit already has an order')
+    return
   tile_resource_key = ndb.Key(urlsafe=tile_resource_id)
 
   if isCampBuildValid(unit_key.get(), tile_resource_key):
     Order(
       order_type = ORDER_TYPE_INT_MAPPING[BUILD_CAMP_KEY],
+      unit_key = unit_key,
       build_camp_order = BuildCampOrder(
-        unit_key = unit_key,
         tile_resource_key = tile_resource_key
       )
     ).put()
+  else:
+    logging.error('The camp build was invalid, order not created.')
   # TODO: return something useful.

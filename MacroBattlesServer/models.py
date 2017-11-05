@@ -7,7 +7,7 @@ from constants_armor import ARMOR_TYPE_INT_MAPPING
 from constants_equipment import EQUIPMENT_TYPE_INT_MAPPING
 from constants_orders import ORDER_TYPE_INT_MAPPING
 from constants_structures import STRUCTURE_TYPE_INT_MAPPING
-from weapon_constants import WEAPON_TYPE_INT_MAPPING
+from constants_weapon import WEAPON_TYPE_INT_MAPPING
 
 class MetalProperties(ndb.Model):
   """Models the properties that a metal resource has."""
@@ -83,27 +83,6 @@ class Player(ndb.Model):
   # Equipment that this player owns.
   equipment = ndb.KeyProperty(kind='Equipment', repeated=True)
 
-class MapTile(ndb.Model):
-  """Models a map tile in the game"""
-  # The X and Y coordinates of the tile in the game map.
-  coordinate_x = ndb.IntegerProperty()
-  coordinate_y = ndb.IntegerProperty()
-
-  # The Resources available to gather from the tile.
-  resources = ndb.KeyProperty(kind='TileResource', repeated=True)
-
-  # Whether or not this tile is a home tile for a player.
-  is_home_tile = ndb.BooleanProperty()
-
-  # Armies that are currently present on this tile.
-  units_on_tile = ndb.KeyProperty(kind='Unit', repeated=True)
-
-  # Whether or not the tile is contested.
-  is_contested = ndb.BooleanProperty()
-
-  # What structure is on the tile.
-  structure = ndb.KeyProperty(kind='PlayerStructure')
-
 class Unit(ndb.Model):
   """Models a player-owned unit in the game."""
   # What type of unit it is.
@@ -113,7 +92,7 @@ class Unit(ndb.Model):
   unit_type = ndb.IntegerProperty()
 
   # Who owns this unit.
-  unit_owner_key = ndb.KeyProperty(kind='Player')
+  owner_key = ndb.KeyProperty(kind='Player')
 
   # How much health this unit has.
   health = ndb.IntegerProperty()
@@ -125,6 +104,12 @@ class Unit(ndb.Model):
   # What tile this unit is currently standing on.
   location_tile = ndb.KeyProperty(kind="MapTile")
 
+  # Order currently assigned to this unit.
+  @property
+  def has_order(self):
+      return Order.query().filter(Order.unit_key == self.key).count()
+
+  current_order = ndb.KeyProperty(kind='Order')
 
 class Weapon(ndb.Model):
   """Models a weapon in the game."""
@@ -139,7 +124,6 @@ class Weapon(ndb.Model):
   # This should be a number in range [0, 1].
   reliability = ndb.FloatProperty()
 
-
 class Armor(ndb.Model):
   """Models an armor in the game."""
   # The type of armor.
@@ -153,7 +137,6 @@ class Armor(ndb.Model):
   # How much more damage the armor can take before breaking.
   # Note: This is not max durability, it is current.
   durability = ndb.IntegerProperty()
-
 
 class Equipment(ndb.Model):
   """The top level class for all equipment models in game."""
@@ -175,17 +158,11 @@ class Equipment(ndb.Model):
 
 class MoveOrder(ndb.Model):
   """Models a move order in the game."""
-  # The unit to move.
-  unit_key = ndb.KeyProperty(kind='Unit')
-
   # The tile to move the unit to.
   destination_map_tile_key = ndb.KeyProperty(kind='MapTile')
 
 class BuildCampOrder(ndb.Model):
   """Models a build camp order in the game."""
-  # The unit that will build the camp.
-  unit_key = ndb.KeyProperty(kind='Unit')
-
   # The resource that the camp will harvest.
   tile_resource_key = ndb.KeyProperty(kind='TileResource')
 
@@ -196,7 +173,8 @@ class Order(ndb.Model):
   # 1: Build Camp
   order_type = ndb.IntegerProperty(choices=ORDER_TYPE_INT_MAPPING.values())
 
-  # TODO: Add player.
+  # The unit that will build the camp.
+  unit_key = ndb.KeyProperty(kind='Unit')
 
   # The data needed to peform a move order.
   move_order = ndb.StructuredProperty(MoveOrder)
@@ -227,3 +205,38 @@ class PlayerStructure(ndb.Model):
 
   # Where the structure is located on the map.
   location = ndb.KeyProperty(kind="MapTile")
+
+
+class MapTile(ndb.Model):
+  """Models a map tile in the game"""
+  # The X and Y coordinates of the tile in the game map.
+  coordinate_x = ndb.IntegerProperty()
+  coordinate_y = ndb.IntegerProperty()
+
+  # The Resources available to gather from the tile.
+  resources = ndb.KeyProperty(kind='TileResource', repeated=True)
+
+  # Whether or not this tile is contested.
+  # This value should be set at the start and end of any conflict by the
+  # turn handler, during the resolveCombat phase.
+  is_contested = ndb.BooleanProperty()
+
+  # Whether or not this tile is a home tile for a player.
+  @property
+  def is_home_tile(self):
+      return Player.query().filter(Player.home_tile == self.key).count() > 0
+
+  # What structure is on the tile.
+  @property
+  def structures(self):
+      return PlayerStructure.query().filter(
+          PlayerStructure.location == self.key)
+
+  @property
+  def has_structure(self):
+      return PlayerStructure.query().filter(
+          PlayerStructure.location == self.key).count() > 0
+
+  @property
+  def units(self):
+      return Unit.query().filter(Unit.location_tile == self.key)

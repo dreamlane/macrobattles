@@ -158,11 +158,12 @@ def hireUnit(player_key_string, unit_type_string):
   # TODO: replace this with a function that does this common thing.
   player = ndb.Key(urlsafe=player_key_string).get()
   unit_cost = UNIT_COSTS[unit_type_string]
+  logging.info(player.money)
   if player.money >= unit_cost:
     player.money -= unit_cost
     player.units.append(Unit(
       unit_type = UNIT_TYPE_INT_MAPPING[unit_type_string],
-      unit_owner_key = ndb.Key(urlsafe=player_key_string),
+      owner_key = ndb.Key(urlsafe=player_key_string),
       health = UNIT_BASE_HEALTH[unit_type_string],
       location_tile = player.home_tile
     ).put())

@@ -5,10 +5,15 @@ import random
 
 from google.appengine.ext import ndb
 
+from constants_orders import MOVE_KEY
+from constants_orders import BUILD_CAMP_KEY
+from constants_orders import ORDER_TYPE_INT_MAPPING
 from constants_structures import HARVESTING_CAMP_KEY
 from constants_structures import STRUCTURE_TYPE_INT_MAPPING
 from resource_utils import determineHarvestRate
 
+from models import HarvestingCamp
+from models import Order
 from models import PlayerStructure
 from models import Resource
 
@@ -79,17 +84,58 @@ class TurnHandler():
 
 
   @staticmethod
-  def resolveOrders():
-    # Get the orders.
-    # TODO: Re-verify them.
-    # Execute them.
-    pass # TODO
+  def resolveOrders(orders):
+    # TODO: Re-verify the orders, so a camp can't be plopped down on a spot that
+    # has become contested.
+    entities_to_put = {}
+    entity_keys_to_delete = []
+    entities_to_create = []
+    for order in orders:
+      if order.order_type == ORDER_TYPE_INT_MAPPING[MOVE_KEY]:
+        # TODO: Add error handling.
+        move_order = order.move_order
+        unit_key = order.unit_key
+        # Update the unit so it can take an order next turn.
+        unit = None
+        if unit_key in entities_to_put:
+          unit = entities_to_put[unit_key]
+        else:
+          unit = unit_key.get()
+        # TODO: See if this code is needed. Does deleting the order auto remove
+        # the keyproperty reference?
+        # unit.order = None
+        # Move the unit.
+        unit.location_tile = move_order.destination_map_tile_key
+        entities_to_put[unit_key] = unit
+
+      elif order.order_type == ORDER_TYPE_INT_MAPPING[BUILD_CAMP_KEY]:
+        # TODO: Add error handling.
+        build_camp_order = order.build_camp_order
+        unit_key = order.unit_key
+        # Building a camp consumes the worker.
+        entity_keys_to_delete.append(unit_key)
+        new_camp = PlayerStructure(
+          structure_type = STRUCTURE_TYPE_INT_MAPPING[HARVESTING_CAMP_KEY],
+          owner_key = unit_key.get().owner_key,
+          harvesting_camp_data = HarvestingCamp(
+            tile_resource_key = build_camp_order.tile_resource_key
+          )
+        )
+        entities_to_create.append(new_camp)
+
+      # Done with the order, set it to be deleted.
+      entity_keys_to_delete.append(order.key)
+
+    # Put and Delete all the entities.
+    ndb.delete_multi(entity_keys_to_delete)
+    ndb.put_multi(entities_to_put.values() + entities_to_create)
 
   @staticmethod
   def resolveCombat():
     # Get all of the map tiles.
     # Find the ones that are contested.
     # Resolve combat on the contested tiles. (including structure damage.)
+    # Set the is_contested bit on tiles appropriatelye
     pass # TODO
 
   @staticmethod
@@ -99,13 +145,19 @@ class TurnHandler():
     camp_query = PlayerStructure.query(PlayerStructure.structure_type ==
         STRUCTURE_TYPE_INT_MAPPING[HARVESTING_CAMP_KEY])
     if camp_query.count() > 0:
-      logging.info('got me some camps')
       TurnHandler.payoutResources(camp_query.fetch())
     else:
-      logging.info('aint got no camps')
+      logging.info('There are no camps, so payoutResources was not called.')
+
     # Step 2: Handle all orders.
-    TurnHandler.resolveOrders()
+    orders_query = Order.query()
+    if orders_query.count() > 0:
+      logging.info("Handling orders. There are: " + str(orders_query.count()))
+      TurnHandler.resolveOrders(orders_query.fetch())
+    else:
+      logging.info('There are no orders to resolve.')
     # Step 3: Resolve Combat.
     TurnHandler.resolveCombat()
+    # TODO: Add a turn counter, and turn counter logic for multi-turn Orders.
     # Step 4: Inform the clients?
     pass # TODO

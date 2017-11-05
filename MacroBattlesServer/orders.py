@@ -3,8 +3,8 @@
 import logging
 import webapp2
 
-from orders_handlers import handleBuildCampOrderRequest
-from orders_handlers import handleUnitMoveRequest
+from order_handlers import handleBuildCampOrderRequest
+from order_handlers import handleUnitMoveRequest
 from requestutils import BaseHandler
 
 class MoveUnitOrderHandler(BaseHandler):

@@ -3,11 +3,12 @@
 import json
 import logging
 import webapp2
+
+from crafting_handlers import craftEquipment
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
 from requestutils import areRequiredKeysPresent
 from gamelogic import addPlayerToWorld
-from gamelogic import craftItem
 from gamelogic import sellResource
 from gamelogic import hireUnit
 from gamelogic import equipUnit
@@ -80,7 +81,7 @@ class CraftEquipmentHandler(BaseHandler):
       # TODO: Write a failure response.
       return None
     inputs = json.loads(self.request.body)
-    craftItem(inputs)
+    craftEquipment(inputs)
     # TODO: write response.
 
 config = {}

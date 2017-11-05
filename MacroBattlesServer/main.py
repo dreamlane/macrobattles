@@ -5,6 +5,7 @@ import logging
 import webapp2
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
+from requestutils import areRequiredKeysPresent
 from gamelogic import addPlayerToWorld
 from gamelogic import craftItem
 from gamelogic import sellResource
@@ -21,38 +22,66 @@ class RegisterHandler(BaseHandler):
 
 class JoinGameHandler(BaseHandler):
   def post(self):
-    # TODO, figure out authentication!
-    addPlayerToWorld(self.request.get('player_id'))
+    # TODO: Handle auth/session.
+    required_keys = ['player_id']
+    inputs = json.loads(self.request.body)
+    if not areRequiredKeysPresent(required_keys, inputs):
+      logging.error('The input for join-game is missing data.')
+      # TODO: Write a failure response.
+      return None
+    inputs = json.loads(self.request.body)
+    addPlayerToWorld(inputs)
+    # Todo: write response
 
 class SellResourceHandler(BaseHandler):
   def post(self):
-    player_id = self.request.get('player_id')
-    resource_id = self.request.get('resource_id')
-    quantity = self.request.get('quantity')
-    sellResource(player_id, resource_id, quantity)
+    # TODO: Handle auth/session.
+    required_keys = ['player_id', 'resource_id', 'quantity']
+    inputs = json.loads(self.request.body)
+    if not areRequiredKeysPresent(required_keys, inputs):
+      logging.error('The input for sell-resource is missing data.')
+      # TODO: Write a failure response.
+      return None
+    sellResource(inputs)
+    # Todo: write response
 
 class HireUnitHandler(BaseHandler):
   def post(self):
-    player_id = self.request.get('player_id')
-    unit_type = self.request.get('unit_type')
-    hireUnit(player_id, unit_type)
+    # TODO: Handle auth/session.
+    required_keys = ['player_id', 'unit_type_string']
+    inputs = json.loads(self.request.body)
+    if not areRequiredKeysPresent(required_keys, inputs):
+      logging.error('The input for hire-unit is missing data.')
+      # TODO: Write a failure response.
+      return None
+    hireUnit(inputs)
     # Todo: write response
 
 class EquipUnitHandler(BaseHandler):
   def post(self):
     # TODO: Handle auth/session.
-    unit_id = self.request.get('unit_id')
-    equipment_id = self.request.get('equipment_id')
+    required_keys = ['unit_id', 'equipment_id']
+    inputs = json.loads(self.request.body)
+    if not areRequiredKeysPresent(required_keys, inputs):
+      logging.error('The input for equip-unit is missing data.')
+      # TODO: Write a failure response.
+      return None
+    inputs = json.loads(self.request.body)
+    equipUnit(inputs)
     # TODO: write response
-    equipUnit(unit_id, equipment_id)
 
 class CraftEquipmentHandler(BaseHandler):
   def post(self):
     # TODO: handle auth/session.
-    # TODO: handle invalid json
+    required_keys = ['player_id', 'equipment_template_key']
     inputs = json.loads(self.request.body)
-    # TODO: write response.
+    if not areRequiredKeysPresent(required_keys, inputs):
+      logging.error('The input for craft-equipment is missing data.')
+      # TODO: Write a failure response.
+      return None
+    inputs = json.loads(self.request.body)
     craftItem(inputs)
+    # TODO: write response.
 
 config = {}
 config['webapp2_extras.sessions'] = {'secret_key': 'r7ps9bd6daoc1984shmogogin'}

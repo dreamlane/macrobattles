@@ -5,6 +5,17 @@ import webapp2
 
 from webapp2_extras import sessions
 
+def areRequiredKeysPresent(keys, json_object):
+  """
+    @param keys A list of strings to check for in the json_object.
+    @param json_object A json object parsed from an input string.
+    @returns True if all of the keys are present in the json_object.
+  """
+  for key in keys:
+    if key not in json_object:
+      return False
+  return True
+
 class BaseHandler(webapp2.RequestHandler):
   """Base handler for all sessioned webapp2 requests."""
 

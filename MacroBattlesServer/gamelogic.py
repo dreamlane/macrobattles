@@ -76,7 +76,7 @@ def generateMapTiles():
       ))
   ndb.put_multi(map_tile_models)
 
-def addPlayerToWorld(player_key_string):
+def addPlayerToWorld(inputs):
   map_query = MapTile.query()
   map_tiles = map_query.fetch(map_query.count())
   home_tile = choice(map_tiles)
@@ -85,7 +85,7 @@ def addPlayerToWorld(player_key_string):
     home_tile = choice(map_tiles)
     logging.info('trying again')
 
-  player = ndb.Key(urlsafe=player_key_string).get()
+  player = ndb.Key(urlsafe=inputs['player_id']).get()
   player.home_tile = home_tile.key
   player.money = 100
   player.put()
@@ -122,15 +122,15 @@ def getValuePerUnit(resource):
                    str(template.resource_type))
   return value / 300
 
-def sellResource(player_key_string, resource_key_string, quantity_string):
+def sellResource(inputs):
   # TODO: make sure the requestor is authorized to make the sale.
-  player_key = ndb.Key(urlsafe=player_key_string)
-  resource_key = ndb.Key(urlsafe=resource_key_string)
+  player_key = ndb.Key(urlsafe=inputs['player_id'])
+  resource_key = ndb.Key(urlsafe=inputs['resource_id'])
   player = player_key.get()
   resource = resource_key.get()
   quantity = 0
   try:
-    quantity = int(quantity_string)
+    quantity = int(inputs['quantity_string'])
   except ValueError:
     logging.error('Input quantity was not an int')
     return None # TODO: return an error response
@@ -150,25 +150,25 @@ def sellResource(player_key_string, resource_key_string, quantity_string):
     #TODO: single transaction
     player.put()
     resource.put()
-
     logging.info("successful sale")
   else:
     logging.info('quantity wrong or resource quantity too low' + str(quantity) + str(resource.quantity))
 
-def hireUnit(player_key_string, unit_type_string):
+def hireUnit(inputs):
   """
      @param player_key_string urlsafe key string for models.Player ndb model.
      @param unit_type_string which unit type to hire.
   """
-  # TODO: replace this with a function that does this common thing.
-  player = ndb.Key(urlsafe=player_key_string).get()
+  player_key = ndb.Key(urlsafe=inputs['player_id'])
+  player = player_key.get()
+  unit_type_string = inputs['unit_type_string']
   unit_cost = UNIT_COSTS[unit_type_string]
   logging.info(player.money)
   if player.money >= unit_cost:
     player.money -= unit_cost
     player.units.append(Unit(
       unit_type = UNIT_TYPE_INT_MAPPING[unit_type_string],
-      owner_key = ndb.Key(urlsafe=player_key_string),
+      owner_key = player_key,
       health = UNIT_BASE_HEALTH[unit_type_string],
       location_tile = player.home_tile
     ).put())
@@ -186,10 +186,10 @@ def playerHasEquipment(player, equipment_key):
   # TODO: move this to a util file?
   return equipment_key in player.equipment
 
-def equipUnit(unit_id, equipment_id):
+def equipUnit(inputs):
   # TODO: Handle invalid keys.
-  unit_key = ndb.Key(urlsafe=unit_id)
-  equipment_key = ndb.Key(urlsafe=equipment_id)
+  unit_key = ndb.Key(urlsafe=inputs['unit_id'])
+  equipment_key = ndb.Key(urlsafe=inputs['equipment_id'])
   unit = unit_key.get()
   # Make sure the unit is standing at home, otherwise it cannot be equiped.
   if not isUnitOnHomeTile(unit):
@@ -210,16 +210,12 @@ def equipUnit(unit_id, equipment_id):
   equipment = equipment_key.get()
   if equipment.equipment_type == EQUIPMENT_TYPE_INT_MAPPING[ARMOR_KEY]:
     current_equipment_key = unit.armor
-    logging.info('unit armor key: ' + str(unit.armor))
     unit.armor = equipment_key
-    logging.info('unit armor key after: ' + str(unit.armor))
     # Remove the equipment from the list.
     player.equipment.remove(equipment_key)
   elif equipment.equipment_type == EQUIPMENT_TYPE_INT_MAPPING[WEAPON_KEY]:
     current_equipment_key = unit.weapon
-    logging.info('unit weapon key: ' + str(unit.weapon))
     unit.weapon = equipment_key
-    logging.info('unit weapon key after: ' + str(unit.weapon))
     player.equipment.remove(equipment_key)
   else:
     logging.error('equipment kind matching failed')
@@ -248,7 +244,10 @@ def craftItem(inputs):
   # TODO: Make this more generic, instead of checking each. DRY this up.
   if cost_to_craft.metal > 0:
     # Check for adequate metal resources.
-    # TODO: validate the input!
+    if 'metal_resource_key' not in inputs:
+      logging.error('metal_resource_key missing from input!')
+      # TODO: handle failure better than returning none.
+      return None
     resource_key = ndb.Key(urlsafe=inputs['metal_resource_key'])
     if resource_key in player.resources:
       resource = resource_key.get()
@@ -269,7 +268,10 @@ def craftItem(inputs):
       return None
   if cost_to_craft.wood > 0:
     # Check for adequate wood resources.
-    # TODO: validate the input!
+    if 'wood_resource_key' not in inputs:
+      logging.error('wood_resource_key missing from input!')
+      # TODO: handle failure better than returning none.
+      return None
     resource_key = ndb.Key(urlsafe=inputs['wood_resource_key'])
     if resource_key in player.resources:
       resource = resource_key.get()
@@ -290,7 +292,10 @@ def craftItem(inputs):
       return None
   if cost_to_craft.leather > 0:
     # Check for adequate leather resources.
-    # TODO: validate the input!
+    if 'leather_resource_key' not in inputs:
+      logging.error('leather_resource_key missing from input!')
+      # TODO: handle failure better than returning none.
+      return None
     resource_key = ndb.Key(urlsafe=inputs['leather_resource_key'])
     if resource_key in player.resources:
       resource = resource_key.get()

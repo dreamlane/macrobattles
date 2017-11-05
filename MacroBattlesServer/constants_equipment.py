@@ -40,3 +40,12 @@ EQUIPMENT_TEMPLATE_TO_TYPE_MAPPING = {
   SWORD_TEMPLATE_KEY: EQUIPMENT_TYPE_INT_MAPPING[WEAPON_KEY],
   PLATE_ARMOR_TEMPLATE_KEY: EQUIPMENT_TYPE_INT_MAPPING[ARMOR_KEY]
 }
+
+class AttributeFormula():
+  """ A simple class to represent the formula for the attribute of an item."""
+
+  # TODO: Make the properties more enum-like
+
+  def __init__(self, formula='', properties={}):
+    self.formula = formula
+    self.properties = properties

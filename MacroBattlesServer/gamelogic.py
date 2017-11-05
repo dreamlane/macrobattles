@@ -19,13 +19,20 @@ from constants_resources import LEATHER_KEY
 from constants_units import UNIT_TYPE_INT_MAPPING
 from constants_units import UNIT_COSTS
 from constants_units import UNIT_BASE_HEALTH
+from constants_weapons import WEAPON_POWER_FORMULA
+from constants_weapons import WEAPON_RELIABILITY_FORMULA
+from constants_weapons import WEAPON_TYPE_INT_MAPPING
 
+from craft_utils import getAttributeValue
+
+from models import Armor
 from models import Equipment
 from models import MapTile
 from models import Player
 from models import ResourceTemplate
 from models import TileResource
 from models import Unit
+from models import Weapon
 
 def generateTileResource():
   ## Randomly choose a resource type key.
@@ -79,9 +86,7 @@ def addPlayerToWorld(player_key_string):
     logging.info('trying again')
 
   player = ndb.Key(urlsafe=player_key_string).get()
-  # TODO: figure out if this is safe, due to 1 failing, and other succeeding.
-  home_tile.is_home_tile = True
-  player.home_tile = home_tile.put()
+  player.home_tile = home_tile.key
   player.money = 100
   player.put()
 
@@ -174,7 +179,7 @@ def hireUnit(player_key_string, unit_type_string):
 
 def isUnitOnHomeTile(unit):
   # TODO: Move this to a util file?
-  player = unit.unit_owner.get()
+  player = unit.owner_key.get()
   return player.home_tile == unit.location_tile
 
 def playerHasEquipment(player, equipment_key):
@@ -193,7 +198,7 @@ def equipUnit(unit_id, equipment_id):
     return None
 
   # Make sure the player has the equipment.
-  player = unit.unit_owner.get()
+  player = unit.owner_key.get()
   if not playerHasEquipment(player, equipment_key):
     # TODO: write an error response
     logging.error('cannot equip unit, player does not have equipment')
@@ -232,12 +237,14 @@ def craftItem(inputs):
   """ @param inputs a json object with inputs."""
   # TODO: Break up this code into functional pieces, and move into craftinglogic.py
   # TODO: Validate inputs.
+  # TODO: Think hard about redesigning the crafting logic.
   equipment_template_key = inputs['equipment_template_key']
   # Make sure the player has all of the necessary resources.
   cost_to_craft = EQUIPMENT_TEMPLATE_CRAFT_COSTS[equipment_template_key]
   player_key = ndb.Key(urlsafe=inputs['player_id']) # TODO: error handle.
   player = player_key.get()
   resources_to_put = []
+  formula_input = {}
   # TODO: Make this more generic, instead of checking each. DRY this up.
   if cost_to_craft.metal > 0:
     # Check for adequate metal resources.
@@ -250,6 +257,7 @@ def craftItem(inputs):
           template.resource_type == RESOURCE_TYPES_INT_MAPPING[METAL_KEY]):
         resource.quantity -= cost_to_craft.metal
         resources_to_put.append(resource)
+        formula_input[METAL_KEY] = template
         # TODO: Add crafting power formulas logic here!
       else:
         logging.error('Metal Quantity too low, or resource is not metal!')
@@ -270,6 +278,7 @@ def craftItem(inputs):
           template.resource_type == RESOURCE_TYPES_INT_MAPPING[WOOD_KEY]):
         resource.quantity -= cost_to_craft.wood
         resources_to_put.append(resource)
+        formula_input[WOOD_KEY] = template
         # TODO: Add crafting power formulas logic here!
       else:
         logging.error('Wood Quantity too low, or resource is not wood!')
@@ -290,6 +299,7 @@ def craftItem(inputs):
           template.resource_type == RESOURCE_TYPES_INT_MAPPING[LEATHER_KEY]):
         resource.quantity -= cost_to_craft.leather
         resources_to_put.append(resource)
+        formula_input[LEATHER_KEY] = template
         # TODO: Add crafting power formulas logic here!
       else:
         logging.error('Leather Quantity too low, or resource is not leather!')
@@ -306,4 +316,18 @@ def craftItem(inputs):
     equipment_type = equipment_type,
     player = player_key)
 
-  # TODO: Do type specific stuff here. and then put() the equipment
+  if equipment_type == EQUIPMENT_TYPE_INT_MAPPING[WEAPON_KEY]:
+    crafted_equipment.weapon_data = Weapon(
+      weapon_type = WEAPON_TYPE_INT_MAPPING[equipment_template_key],
+      power = int(getAttributeValue(formula_input,
+                  WEAPON_POWER_FORMULA[equipment_template_key])),
+      reliability = getAttributeValue(formula_input,
+                    WEAPON_RELIABILITY_FORMULA[equipment_template_key])
+    )
+    player.equipment.append(crafted_equipment.put())
+    player.put()
+
+  # TODO: Handle armor crafting.
+
+  # Crafting complete. Now update the resources.
+  ndb.put_multi(resources_to_put)

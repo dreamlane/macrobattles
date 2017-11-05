@@ -7,7 +7,7 @@ from constants_armor import ARMOR_TYPE_INT_MAPPING
 from constants_equipment import EQUIPMENT_TYPE_INT_MAPPING
 from constants_orders import ORDER_TYPE_INT_MAPPING
 from constants_structures import STRUCTURE_TYPE_INT_MAPPING
-from constants_weapon import WEAPON_TYPE_INT_MAPPING
+from constants_weapons import WEAPON_TYPE_INT_MAPPING
 
 class MetalProperties(ndb.Model):
   """Models the properties that a metal resource has."""
@@ -81,6 +81,7 @@ class Player(ndb.Model):
   units = ndb.KeyProperty(kind='Unit', repeated=True)
 
   # Equipment that this player owns.
+  # TODO: limit this stash to 100 at some point, and create other stashes.
   equipment = ndb.KeyProperty(kind='Equipment', repeated=True)
 
 class Unit(ndb.Model):

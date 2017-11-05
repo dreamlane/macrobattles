@@ -11,8 +11,10 @@ from constants_orders import ORDER_TYPE_INT_MAPPING
 from constants_structures import HARVESTING_CAMP_KEY
 from constants_structures import STRUCTURE_TYPE_INT_MAPPING
 from resource_utils import determineHarvestRate
+from battle_utils import resolveAttack
 
 from models import HarvestingCamp
+from models import MapTile
 from models import Order
 from models import PlayerStructure
 from models import Resource
@@ -108,6 +110,33 @@ class TurnHandler():
         unit.location_tile = move_order.destination_map_tile_key
         entities_to_put[unit_key] = unit
 
+        # Check to see if the tile is now contested:
+        # TODO: Optimize this eventually... figuring out contested state is ugly.
+        map_tile = None
+        if unit.location_tile in entities_to_put:
+          map_tile = entities_to_put[unit.location_tile]
+        else:
+          map_tile = unit.location_tile.get()
+        if not map_tile.is_contested:
+          units_on_tile = map_tile.units.fetch()
+          # Check for multiple players on the same tile.
+          player_keys = [unit.owner_key]
+          for tile_unit in units_on_tile:
+            if tile_unit.owner_key not in player_keys:
+              # More than one player has been found on the tile.
+              player_keys.append(tile_unit.owner_key)
+              map_tile.is_contested = True
+              break
+          if len(player_keys) < 2:
+            tile_structures = map_tile.structures.fetch()
+            for tile_structure in tile_structures:
+              if tile_structure.owner_key not in player_keys:
+                # More than one player has been found on the tile.
+                player_keys.append(tile_structure.owner_key)
+                map_tile.is_contested = True
+          if len(player_keys) >= 2:
+            map_tile.put()
+
       elif order.order_type == ORDER_TYPE_INT_MAPPING[BUILD_CAMP_KEY]:
         # TODO: Add error handling.
         build_camp_order = order.build_camp_order
@@ -132,11 +161,50 @@ class TurnHandler():
 
   @staticmethod
   def resolveCombat():
-    # Get all of the map tiles.
-    # Find the ones that are contested.
-    # Resolve combat on the contested tiles. (including structure damage.)
-    # Set the is_contested bit on tiles appropriatelye
-    pass # TODO
+    contested_tiles = MapTile.query(MapTile.is_contested == True).fetch()
+    if len(contested_tiles) > 0:
+      for contested_tile in contested_tiles:
+        # Key = player_key, Value = list of units the player owns.
+        armies = {}
+        # Key = player_key, Value = list of strutures the player owns.
+        structures = {}
+        units_on_tile = contested_tile.units.fetch()
+        structures_on_tile = contested_tile.structures.fetch()
+        # The use of setdefault below allows us to automatically create a dict
+        # entry if one isn't there already.
+        for unit in units_on_tile:
+          armies.setdefault(unit.owner_key, []).append(unit)
+        for structure in structures:
+          structures.setdefault(structure.owner_key, []).append(structure)
+
+        # To resolve combat, each unit randomly attacks an enemy unit.
+        # There can be any number of players on a single tile.
+        # Each unit will get to hit, even if they get killed this round.
+        # For now, overkill is possible, meaning a unit with <= 0 health can get
+        # hit multiple times.
+        for player, army in armies.iteritems():
+          targets = []
+          for opponent in armies.keys():
+            # Don't add the attacker's own units to the target list!
+            if opponent != player:
+              for opponent_unit in armies[opponent]:
+                targets.append(opponent_unit)
+          for unit in army:
+            # Randomly choose a target and hit it!
+            target = random.choice(targets)
+            resolveAttack(unit, target)
+        # TODO: attack the buildings if no units are present.
+
+        # Now that the battle is done, delete all of the dead units.
+        for army in armies.values():
+          for unit in army:
+            if unit.health <= 0:
+              unit.key.delete()
+        # TODO: Take the map tile out of contested state if there is no contest
+        # remaining.
+
+    else:
+      logging.info('there is no combat to resolve.')
 
   @staticmethod
   def handleTurn():

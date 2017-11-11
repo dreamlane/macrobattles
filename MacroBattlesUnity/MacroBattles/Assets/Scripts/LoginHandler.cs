@@ -13,6 +13,7 @@ public class LoginHandler : MonoBehaviour {
 
   public InputField usernameField;
   public InputField passwordField;
+  // Used to display login errors to the user.
   public Text errorText;
   public Button loginButton;
   public Button registerButton;
@@ -65,19 +66,22 @@ public class LoginHandler : MonoBehaviour {
       yield return www.Send();
 
       if(www.isError) {
+        errorText.text = "Connection Error";
         Debug.Log(www.error);
       }
       else {
         string rawjson = www.downloadHandler.text;
-        if (rawjson != "fail")
         Debug.Log("Form upload complete!");
         Debug.Log(www.downloadHandler.text);
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
         if (response.status == "success") {
           SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+        } else {
+          errorText.text = response.error;
+          Debug.Log(response.status);
+          Debug.Log(response.data);
+          Debug.Log(response.error);
         }
-        Debug.Log(response.status);
-        Debug.Log(response.data);
       }
     }
   }

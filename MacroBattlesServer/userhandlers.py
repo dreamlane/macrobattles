@@ -14,12 +14,17 @@ class UserLoginHandler():
     username = request.get('username')
     password = request.get('password')
 
+    error_message = 'Login fail.'
     query = Player.query(Player.username == username)
     if query.count() > 0:
       player = query.get()
       if player.password == password:
         return ResponseBuilder().setData
-    return ResponseBuilder().setErrorMessage('Login fail.').build()
+      else:
+        error_message += ' Password incorrect.'
+    else:
+      error_message += ' Username not found.'
+    return ResponseBuilder().setErrorMessage(error_message).build()
 
   @staticmethod
   def handleRegisterRequest(request):

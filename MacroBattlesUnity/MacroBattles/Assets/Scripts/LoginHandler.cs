@@ -45,10 +45,19 @@ public class LoginHandler : MonoBehaviour {
       if(www.isError) {
         errorText.text = "Connection Error";
         Debug.Log(www.error);
-      } else if (www.downloadHandler.text == "success") {
-        SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
       } else {
-        errorText.text = www.downloadHandler.text;
+        string rawjson = www.downloadHandler.text;
+        Debug.Log("Form upload complete!");
+        Debug.Log(www.downloadHandler.text);
+        ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
+        if (response.status == ResponseConstants.SUCCESS) {
+          SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+        } else {
+          errorText.text = response.error;
+          Debug.Log(response.status);
+          Debug.Log(response.data);
+          Debug.Log(response.error);
+        }
       }
     }
   }
@@ -74,7 +83,7 @@ public class LoginHandler : MonoBehaviour {
         Debug.Log("Form upload complete!");
         Debug.Log(www.downloadHandler.text);
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
-        if (response.status == "success") {
+        if (response.status == ResponseConstants.SUCCESS) {
           SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
         } else {
           errorText.text = response.error;

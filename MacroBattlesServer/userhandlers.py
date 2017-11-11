@@ -19,7 +19,7 @@ class UserLoginHandler():
     if query.count() > 0:
       player = query.get()
       if player.password == password:
-        return ResponseBuilder().setData
+        return ResponseBuilder().setData('').build()
       else:
         error_message += ' Password incorrect.'
     else:

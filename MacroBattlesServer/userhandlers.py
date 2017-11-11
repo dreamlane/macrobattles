@@ -53,5 +53,4 @@ class UserLoginHandler():
     player = {}
     player['username'] = username
     response.setData(player)
-    logging.error(response.build())
     return response.build()

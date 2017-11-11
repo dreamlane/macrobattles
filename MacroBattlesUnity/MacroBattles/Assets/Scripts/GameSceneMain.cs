@@ -9,7 +9,8 @@ public class GameSceneMain : MonoBehaviour {
   public float timeRemaining = 3;
 	// Use this for initialization
 	void Start () {
-
+    // Get the map of the world. If no map, then offer a join game button.
+    WWWForm form = new WWWForm();
 	}
 
 	// Update is called once per frame

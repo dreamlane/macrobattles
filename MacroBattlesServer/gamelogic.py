@@ -54,15 +54,14 @@ def generateTileResource():
 def generateMapTiles():
   map_tile_models = []
   for x in range(0,4):
-    for y in range(0,4):
+    for y in range(0,6):
       tile_resources = []
       for i in range(0,3):
         tile_resources.append(generateTileResource())
       map_tile_models.append(MapTile(
         coordinate_x = x,
         coordinate_y = y,
-        resources = tile_resources,
-        is_home_tile = False
+        resources = tile_resources
       ))
   ndb.put_multi(map_tile_models)
 

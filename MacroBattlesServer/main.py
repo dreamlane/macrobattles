@@ -5,6 +5,7 @@ import logging
 import webapp2
 
 from crafting_handlers import craftEquipment
+from map_handlers import handleGetMapRequest
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
 from requestutils import areRequiredKeysPresent
@@ -84,6 +85,13 @@ class CraftEquipmentHandler(BaseHandler):
     craftEquipment(inputs)
     # TODO: write response.
 
+class MapHandler(BaseHandler):
+  def get(self):
+    # TODO: handle auth/session.
+    # TODO: Create an interest model to allow fog of war.
+    logging.info('calling method')
+    self.response.write(handleGetMapRequest())
+
 config = {}
 config['webapp2_extras.sessions'] = {'secret_key': 'r7ps9bd6daoc1984shmogogin'}
 app = webapp2.WSGIApplication([
@@ -94,4 +102,5 @@ app = webapp2.WSGIApplication([
   webapp2.Route(r'/hire-unit', handler=HireUnitHandler, name='hire-unit'),
   webapp2.Route(r'/equip-unit', handler=EquipUnitHandler, name='equip-unit'),
   webapp2.Route(r'/craft-equipment', handler=CraftEquipmentHandler, name='craft-equipment'),
+  webapp2.Route(r'/map', handler=MapHandler, name='map'),
 ], debug=True, config=config)

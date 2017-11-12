@@ -47,9 +47,13 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Constants.cs" />
+     <Compile Include="Assets\Scripts\GameObjectScripts\MapEngine.cs" />
+     <Compile Include="Assets\Scripts\GameObjectScripts\MapTileScript.cs" />
      <Compile Include="Assets\Scripts\GameSceneMain.cs" />
-     <Compile Include="Assets\Scripts\LoginHandler.cs" />
-     <Compile Include="Assets\Scripts\Models.cs" />
+     <Compile Include="Assets\Scripts\Models\MapModels.cs" />
+     <Compile Include="Assets\Scripts\Models\Models.cs" />
+     <Compile Include="Assets\Scripts\RequestHandlers\LoginHandler.cs" />
+     <Compile Include="Assets\Scripts\RequestHandlers\MapRequestHandler.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

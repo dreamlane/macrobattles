@@ -6,13 +6,15 @@ public class GameSceneMain : MonoBehaviour {
   public GameObject mapObject;
   public MapEngine mapEngine;
 
+  private GameModel gameModel;
+
 	void Start () {
     Debug.Log("Game Scene started");
     // Get a handle on the mapObject, and its script.
     mapObject = GameObject.FindWithTag("Map");
     mapEngine = mapObject.GetComponent(typeof(MapEngine)) as MapEngine;
 
-    // Start the request to get the map of the world.
+    // Start the request to get the map of the world, and everything on it.
     StartCoroutine(MapRequestHandler.getMap(this));
 	}
 
@@ -23,4 +25,10 @@ public class GameSceneMain : MonoBehaviour {
       Debug.Log("Map not built.");
     }
 	}
+
+  public void SetGameModel(GameModel model) {
+    gameModel = model;
+    // Whenever the game model is set, update the map engine.
+    mapEngine.SetMapTiles(gameModel.mapTiles);
+  }
 }

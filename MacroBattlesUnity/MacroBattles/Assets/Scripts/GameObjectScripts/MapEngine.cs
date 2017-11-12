@@ -5,43 +5,71 @@ public class MapEngine : MonoBehaviour {
 
   private bool mapBuilt = false;
 
-  List<List<GameObject>> mapTiles;
-  public MapModel mapModel;
+  public List<MapTileModel> mapTiles;
 
   public GameObject mapTilePrefab;
+  public GameObject unitPrefab;
 
   void Start() {
     Debug.Log("Start called on MapEngine");
-    mapModel = null;
+    mapTiles = null;
   }
 
   void Update() {
     if (!mapBuilt) {
-      if (mapModel != null) {
-        Debug.Log(mapModel);
-        buildMap();
+      if (mapTiles != null) {
+        Debug.Log(mapTiles);
+        BuildMap();
       }
     }
   }
 
-  public void setMapModel(MapModel model) {
-    mapModel = model;
+  public void SetMapTiles(List<MapTileModel> tiles) {
+    mapTiles = tiles;
+    // Anytime the tiles are updated, rebuild the map.
+    BuildMap();
   }
 
-  private void buildMap() {
+  private void BuildMap() {
     GameObject mapObject = GameObject.FindWithTag("Map");
-    foreach (MapTileModel tileModel in mapModel.mapTiles) {
-      // Make a new game object for every map tile in the model.
+    // If the map already has tiles, blow them away and make new ones.
+    // TODO: Investigate updating existing tiles, rather than recreating them.
+    if (mapObject.transform.childCount > 0) {
+      Debug.Log("Destroying maptiles.");
+      foreach (Transform child in mapObject.transform) {
+        GameObject.Destroy(child.gameObject);
+      }
+    }
+
+    // Build the game objects for the map.
+    foreach (MapTileModel tileModel in mapTiles) {
+      // Make a new game object for the map tile.
       GameObject tileObject = Instantiate(mapTilePrefab) as GameObject;
       tileObject.transform.parent = mapObject.transform;
       Renderer renderer = tileObject.GetComponent<Renderer>();
       float x_pos = tileModel.coordinate_x * renderer.bounds.size.x;
       float y_pos = tileModel.coordinate_y * renderer.bounds.size.y;
-      tileObject.transform.localPosition =
-          new Vector2(x_pos, y_pos);
+      float z_pos = PositionConstants.MAP_TILE_Z;
+      tileObject.transform.localPosition = new Vector3(x_pos, y_pos, z_pos);
       MapTileScript script = tileObject.GetComponent(typeof(MapTileScript)) as MapTileScript;
       script.x = tileModel.coordinate_x;
       script.y = tileModel.coordinate_y;
+      if (tileModel.resources != null) {
+        script.SetTileResources(tileModel.resources);
+      } else {
+        Debug.Log("No resources.");
+      }
+      // Make a new game object for every unit on the tile.
+      // TODO: Make this more interesting for battles that have many units.
+      if (tileModel.unit_keys.Count > 0) {
+        foreach (string unit_key in tileModel.unit_keys) {
+          // TODO: Make this an army marker object, since multiple units land on same tile.
+          // TODO: Set up a script that makes the units tappable for information.
+          GameObject unitObject = Instantiate(unitPrefab) as GameObject;
+          unitObject.transform.parent = tileObject.transform;
+          unitObject.transform.localPosition = new Vector3(0, 0, PositionConstants.UNIT_Z);
+        }
+      }
     }
     mapBuilt = true;
   }

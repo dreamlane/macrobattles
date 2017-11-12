@@ -96,6 +96,7 @@ class Unit(ndb.Model):
   owner_key = ndb.KeyProperty(kind='Player')
 
   # How much health this unit has.
+  # TODO: Add max health?
   health = ndb.IntegerProperty()
 
   # What equipment this unit is wearing.

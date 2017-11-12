@@ -30,11 +30,10 @@ public class MapRequestHandler {
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
         if (response.status == ResponseConstants.SUCCESS) {
           // We've gotten a successful response, deserialize the response into a model.
-          MapModel mapModel = JsonUtility.FromJson<MapModel>(response.data);
-          Debug.Log(mapModel.ToString());
+          GameModel gameModel = JsonUtility.FromJson<GameModel>(response.data);
 
-          // Hand the model to the mapEngine.
-          gameScene.mapEngine.setMapModel(mapModel);
+          // Hand the maptiles to the mapEngine.
+          gameScene.SetGameModel(gameModel);
           Debug.Log(response.data);
         } else {
           Debug.Log(response.status);

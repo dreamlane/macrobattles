@@ -68,9 +68,11 @@ def generateMapTiles():
 def addPlayerToWorld(inputs):
   map_query = MapTile.query()
   map_tiles = map_query.fetch(map_query.count())
+  # TODO: improve the map tile choice logic.
   home_tile = choice(map_tiles)
   while not validateHomeTileSelection(home_tile):
-    # TODO: guard against infinite loop
+    # TODO: guard against infinite loop, by making the map grow, or blocking the
+    # player from joining.
     home_tile = choice(map_tiles)
     logging.info('trying again')
 

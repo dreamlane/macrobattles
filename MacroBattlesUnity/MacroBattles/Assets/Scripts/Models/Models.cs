@@ -25,5 +25,11 @@ public class GameModel {
   // The resource templates in the game.
   // See ResourceModels.cs
   public List<ResourceTemplateModel> resource_templates;
+  // The equipment in the game.
+  // See EquipmentModels.cs
+  public List<EquipmentModel> equipment;
+  // The structures in the game.
+  // See StructureModels.cs
+  public List<StructureModel> structures;
 }
 

@@ -141,11 +141,13 @@ class TurnHandler():
         # TODO: Add error handling.
         build_camp_order = order.build_camp_order
         unit_key = order.unit_key
+        unit = unit_key.get()
         # Building a camp consumes the worker.
         entity_keys_to_delete.append(unit_key)
         new_camp = PlayerStructure(
           structure_type = STRUCTURE_TYPE_INT_MAPPING[HARVESTING_CAMP_KEY],
-          owner_key = unit_key.get().owner_key,
+          owner_key = unit.owner_key,
+          location = unit.location_tile,
           harvesting_camp_data = HarvestingCamp(
             tile_resource_key = build_camp_order.tile_resource_key
           )

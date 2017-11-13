@@ -91,14 +91,14 @@ def isMoveValid(unit, target_tile):
     return False
 
 
-def handleUnitMoveRequest(unit_id, target_tile_id):
+def handleUnitMoveRequest(inputs):
   # TODO: Handle invalid keys.
-  unit_key = ndb.Key(urlsafe=unit_id)
+  unit_key = ndb.Key(urlsafe=inputs['unit_id'])
   unit = unit_key.get()
   if unit.has_order:
     logging.error('The unit already has an order')
     return
-  tile_key = ndb.Key(urlsafe=target_tile_id)
+  tile_key = ndb.Key(urlsafe=inputs['target_tile_id'])
   # TODO: Handle checking that the unit doesn't already have an order.
   # Check if the movement is valid
   if isMoveValid(unit_key.get(), tile_key.get()):
@@ -136,14 +136,14 @@ def isCampBuildValid(unit, tile_resource_key):
 
   return True
 
-def handleBuildCampOrderRequest(unit_id, tile_resource_id):
+def handleBuildCampOrderRequest(inputs):
   # TODO: Handle invalid keys.
-  unit_key = ndb.Key(urlsafe=unit_id)
+  unit_key = ndb.Key(urlsafe=inputs['unit_id'])
   unit = unit_key.get()
   if unit.has_order:
     logging.error('The unit already has an order')
     return
-  tile_resource_key = ndb.Key(urlsafe=tile_resource_id)
+  tile_resource_key = ndb.Key(urlsafe=inputs['tile_resource_id'])
 
   if isCampBuildValid(unit_key.get(), tile_resource_key):
     Order(

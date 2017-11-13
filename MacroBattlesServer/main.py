@@ -8,11 +8,14 @@ from crafting_handlers import craftEquipment
 from map_handlers import handleGetMapRequest
 from userhandlers import UserLoginHandler
 from requestutils import BaseHandler
+from requestutils import ResponseBuilder
 from requestutils import areRequiredKeysPresent
 from gamelogic import addPlayerToWorld
 from gamelogic import sellResource
 from gamelogic import hireUnit
 from gamelogic import equipUnit
+
+## TODO: DRY up all of the required keys and json.loads logic.
 
 class LoginHandler(BaseHandler):
   def post(self):
@@ -89,8 +92,17 @@ class MapHandler(BaseHandler):
   def get(self):
     # TODO: handle auth/session.
     # TODO: Create an interest model to allow fog of war.
-    logging.info('calling method')
-    self.response.write(handleGetMapRequest())
+    # TODO: Error check the query params.
+    if self.request.get('player_id'):
+      inputs = {'player_id': self.request.get('player_id')}
+      self.response.write(handleGetMapRequest(inputs))
+    else:
+      logging.error('player_id missing from map get!')
+      response = ResponseBuilder()
+      self.response.write(response.setErrorMessage(
+          'Cannot get map. The request is missing a player_id.'
+      ).build())
+
 
 config = {}
 config['webapp2_extras.sessions'] = {'secret_key': 'r7ps9bd6daoc1984shmogogin'}

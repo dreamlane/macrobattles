@@ -17,16 +17,17 @@ public class MapRequestHandler {
       requestDomain = Constants.LOCAL_HOST;
     }
 #endif
-    using(UnityWebRequest www = UnityWebRequest.Get(requestDomain + "/map")) {
+    // TODO: Error check the PlayerState first.
+    string query = "/map?player_id=" + PlayerState.GetPlayerKey();
+
+    using(UnityWebRequest www = UnityWebRequest.Get(requestDomain + query)) {
       yield return www.Send();
 
       if(www.isError) {
         // TODO: Make this show an error on the client, or something.
-        Debug.Log(www.error);
+        Debug.LogError(www.error);
       } else {
         string rawjson = www.downloadHandler.text;
-        Debug.Log("Map GET request complete!");
-        Debug.Log(www.downloadHandler.text);
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
         if (response.status == ResponseConstants.SUCCESS) {
           // We've gotten a successful response, deserialize the response into a model.
@@ -34,8 +35,8 @@ public class MapRequestHandler {
 
           // Hand the maptiles to the mapEngine.
           gameScene.SetGameModel(gameModel);
-          Debug.Log(response.data);
         } else {
+          // TODO: If getting the map doesn't work, expose the Error Message to the user.
           Debug.Log(response.status);
           Debug.Log(response.data);
           Debug.Log(response.error);

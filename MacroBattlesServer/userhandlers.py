@@ -1,7 +1,10 @@
 ## userhandlers.py Handles API calls involving users.
+import json
 import logging
 
 from google.appengine.api import users
+
+from gamelogic import addPlayerToWorld
 from models import Player
 from requestutils import ResponseBuilder
 
@@ -12,6 +15,7 @@ class UserLoginHandler():
   def handleLoginRequest(request):
     """Handles a login request."""
     username = request.get('username')
+    # TODO: Make passwords cryptographically secure.
     password = request.get('password')
 
     error_message = 'Login fail.'
@@ -19,7 +23,10 @@ class UserLoginHandler():
     if query.count() > 0:
       player = query.get()
       if player.password == password:
-        return ResponseBuilder().setData('').build()
+        # Return the urlsafe player key to the client.
+        # TODO: Figure out authentication.
+        data = {'key': player.key.urlsafe()}
+        return ResponseBuilder().setData(json.dumps(data)).build()
       else:
         error_message += ' Password incorrect.'
     else:
@@ -46,11 +53,12 @@ class UserLoginHandler():
       response.setErrorMessage('The username is already in use.')
       return response.build()
 
-    newPlayer = Player(
+    player_key = Player(
         username=username,
-        password=password)
-    newPlayer.put()
-    player = {}
-    player['username'] = username
-    response.setData(player)
-    return response.build()
+        password=password).put()
+
+    # TODO: Figure out how to have players join the world in a better way.
+    addPlayerToWorld({'player_id': player_key.urlsafe()})
+
+    data = {'key': player_key.urlsafe()}
+    return ResponseBuilder().setData(json.dumps(data)).build()

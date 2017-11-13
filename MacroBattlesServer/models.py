@@ -203,6 +203,7 @@ class PlayerStructure(ndb.Model):
   harvesting_camp_data = ndb.StructuredProperty(HarvestingCamp)
 
   # How much damage the structure must take before it is destroyed.
+  # TODO: Add max health.
   health = ndb.IntegerProperty()
 
   # Where the structure is located on the map.

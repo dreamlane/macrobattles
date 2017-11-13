@@ -8,6 +8,9 @@ public class MapTileModel {
   public int coordinate_x;
   public int coordinate_y;
   public List<string> unit_keys;
+  public List<string> structure_keys;
+  public bool is_enemy_home;
+  public bool is_player_home;
 }
 
 [System.Serializable]

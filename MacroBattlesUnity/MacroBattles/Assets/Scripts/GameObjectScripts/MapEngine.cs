@@ -8,7 +8,10 @@ public class MapEngine : MonoBehaviour {
   public List<MapTileModel> mapTiles;
 
   public GameObject mapTilePrefab;
+  public GameObject structurePrefab;
   public GameObject unitPrefab;
+  public GameObject playerCastlePrefab;
+  public GameObject enemyCastlePrefab;
 
   void Start() {
     Debug.Log("Start called on MapEngine");
@@ -69,6 +72,29 @@ public class MapEngine : MonoBehaviour {
           unitObject.transform.parent = tileObject.transform;
           unitObject.transform.localPosition = new Vector3(0, 0, PositionConstants.UNIT_Z);
         }
+      }
+      // Make a new game object for every structure on the tile.
+      if (tileModel.structure_keys.Count > 0) {
+        foreach (string structure_key in tileModel.structure_keys) {
+          GameObject structureObject = Instantiate(structurePrefab) as GameObject;
+          structureObject.transform.parent = tileObject.transform;
+          structureObject.transform.localPosition =
+              new Vector3(0, 0, PositionConstants.STRUCTURE_Z);
+        }
+      }
+      // Make a new game object for enemy bases.
+      if (tileModel.is_enemy_home) {
+        GameObject enemyHomeObject = Instantiate(enemyCastlePrefab) as GameObject;
+        enemyHomeObject.transform.parent = tileObject.transform;
+        enemyHomeObject.transform.localPosition =
+            new Vector3(0, 0, PositionConstants.STRUCTURE_Z);
+      }
+      // Make a new game object for the player base.
+      if (tileModel.is_player_home) {
+        GameObject playerHomeObject = Instantiate(playerCastlePrefab) as GameObject;
+        playerHomeObject.transform.parent = tileObject.transform;
+        playerHomeObject.transform.localPosition =
+            new Vector3(0, 0, PositionConstants.STRUCTURE_Z);
       }
     }
     mapBuilt = true;

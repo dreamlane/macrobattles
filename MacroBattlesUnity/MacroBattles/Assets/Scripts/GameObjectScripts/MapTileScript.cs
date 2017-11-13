@@ -18,8 +18,8 @@ public class MapTileScript : MonoBehaviour {
   void OnMouseUpAsButton() {
     Debug.Log("Clicked me: " + x + y);
     foreach (TileResourceModel resource in resources) {
-      Debug.Log("Resource template key: "  + resource.template_key);
-      Debug.Log("Resource saturation: "  + resource.saturation);
+      Debug.Log("Resource template key: " + resource.template_key);
+      Debug.Log("Resource saturation: " + resource.saturation);
     }
   }
 

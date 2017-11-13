@@ -55,7 +55,9 @@
      <Compile Include="Assets\Scripts\Models\MapModels.cs" />
      <Compile Include="Assets\Scripts\Models\Models.cs" />
      <Compile Include="Assets\Scripts\Models\ResourceModels.cs" />
+     <Compile Include="Assets\Scripts\Models\StructureModels.cs" />
      <Compile Include="Assets\Scripts\Models\UnitModels.cs" />
+     <Compile Include="Assets\Scripts\PlayerState.cs" />
      <Compile Include="Assets\Scripts\RequestHandlers\LoginHandler.cs" />
      <Compile Include="Assets\Scripts\RequestHandlers\MapRequestHandler.cs" />
  <Reference Include="UnityEngine.UI">

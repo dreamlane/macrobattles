@@ -44,20 +44,11 @@ public class LoginHandler : MonoBehaviour {
 
       if(www.isError) {
         errorText.text = "Connection Error";
-        Debug.Log(www.error);
+        Debug.LogError(www.error);
       } else {
         string rawjson = www.downloadHandler.text;
-        Debug.Log("Form upload complete!");
-        Debug.Log(www.downloadHandler.text);
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
-        if (response.status == ResponseConstants.SUCCESS) {
-          SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
-        } else {
-          errorText.text = response.error;
-          Debug.Log(response.status);
-          Debug.Log(response.data);
-          Debug.Log(response.error);
-        }
+        handleResponse(response);
       }
     }
   }
@@ -67,31 +58,34 @@ public class LoginHandler : MonoBehaviour {
   }
 
   IEnumerator uploadRegisterForm() {
+    // TODO: DRY this up with the uploadLoginForm.
     WWWForm form = new WWWForm();
     form.AddField("username", usernameField.text);
     form.AddField("password", passwordField.text);
     using(UnityWebRequest www = UnityWebRequest.Post(requestDomain + "/register", form)) {
-      Debug.Log("SENDING");
       yield return www.Send();
 
       if(www.isError) {
         errorText.text = "Connection Error";
-        Debug.Log(www.error);
+        Debug.LogError(www.error);
       }
       else {
         string rawjson = www.downloadHandler.text;
-        Debug.Log("Form upload complete!");
-        Debug.Log(www.downloadHandler.text);
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
-        if (response.status == ResponseConstants.SUCCESS) {
-          SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
-        } else {
-          errorText.text = response.error;
-          Debug.Log(response.status);
-          Debug.Log(response.data);
-          Debug.Log(response.error);
-        }
+        handleResponse(response);
       }
+    }
+  }
+
+  private void handleResponse(ResponseModel response) {
+    if (response.status == ResponseConstants.SUCCESS) {
+      // Set the initial PlayerModel on the PlayerState.
+      PlayerModel playerModel = JsonUtility.FromJson<PlayerModel>(response.data);
+      PlayerState.SetPlayerModel(playerModel);
+      SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
+    } else {
+      // If Login doesn't work, expose the error message to the user.
+      errorText.text = response.error;
     }
   }
 }

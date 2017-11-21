@@ -15,6 +15,7 @@ class AdminLoginHandler(webapp2.RequestHandler):
         if user:
             nickname = user.nickname()
             logout_url = users.create_logout_url('/')
+            # TODO: Return some buttons that do admin commands!
             greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(
                 nickname, logout_url)
         else:

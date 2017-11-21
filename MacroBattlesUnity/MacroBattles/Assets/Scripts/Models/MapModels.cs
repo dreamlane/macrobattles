@@ -15,6 +15,7 @@ public class MapTileModel {
 
 [System.Serializable]
 public class TileResourceModel {
+  // This is a key to a ResourceTemplateModel in ResourceModels.cs.
   public string template_key;
   public int saturation;
 }

@@ -31,4 +31,8 @@ public class GameSceneMain : MonoBehaviour {
     // Whenever the game model is set, update the map engine.
     mapEngine.SetMapTiles(gameModel.mapTiles);
   }
+
+  public GameModel GetGameModel() {
+    return gameModel;
+  }
 }

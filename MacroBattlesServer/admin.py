@@ -25,7 +25,7 @@ class AdminLoginHandler(webapp2.RequestHandler):
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
 
-class TestTurnHandler(webapp2.RequestHandler):
+class AdminTurnHandler(webapp2.RequestHandler):
   def post(self):
     # TODO: make sure this is asyncronous, in case the calculations for a turn take a long time.
     TurnHandler.handleTurn();
@@ -51,7 +51,7 @@ class TestPutCampOnSpot(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin/login', handler=AdminLoginHandler, name='admin-login'),
-    webapp2.Route(r'/admin/turn', handler=TestTurnHandler, name='admin-turn'),
+    webapp2.Route(r'/admin/turn', handler=AdminTurnHandler, name='admin-turn'),
     webapp2.Route(r'/admin/make-map', handler=TestMapGeneration, name='admin-make-map'),
     webapp2.Route(r'/admin/give-player-resource-test', handler=TestGivePlayerResource, name='give-player-resource-test'), #TODO: remove
     webapp2.Route(r'/admin/give-player-equipment-test', handler=TestGivePlayerEquipment, name='give-player-equipment-test'), #TODO: remove

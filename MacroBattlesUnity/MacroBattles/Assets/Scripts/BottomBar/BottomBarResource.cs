@@ -9,6 +9,7 @@ public class BottomBarResource : MonoBehaviour {
   public Text resourceNameText;
   public Text resourceTypeText;
   public Text saturationText;
+  public Button bottomBarButton;
 
 	// Use this for initialization
 	void Start () {

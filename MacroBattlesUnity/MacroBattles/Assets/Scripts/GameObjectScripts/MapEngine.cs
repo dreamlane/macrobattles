@@ -55,13 +55,8 @@ public class MapEngine : MonoBehaviour {
       float z_pos = PositionConstants.MAP_TILE_Z;
       tileObject.transform.localPosition = new Vector3(x_pos, y_pos, z_pos);
       MapTileScript script = tileObject.GetComponent(typeof(MapTileScript)) as MapTileScript;
-      script.x = tileModel.coordinate_x;
-      script.y = tileModel.coordinate_y;
-      if (tileModel.resources != null) {
-        script.SetTileResources(tileModel.resources);
-      } else {
-        Debug.Log("No resources.");
-      }
+      script.SetModel(tileModel);
+      
       // Make a new game object for every unit on the tile.
       // TODO: Make this more interesting for battles that have many units.
       if (tileModel.unit_keys.Count > 0) {

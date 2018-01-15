@@ -42,7 +42,7 @@ public class LoginHandler : MonoBehaviour {
     using(UnityWebRequest www = UnityWebRequest.Post(requestDomain + "/login", form)) {
       yield return www.Send();
 
-      if(www.isError) {
+      if(www.isNetworkError) {
         errorText.text = "Connection Error";
         Debug.LogError(www.error);
       } else {
@@ -65,7 +65,7 @@ public class LoginHandler : MonoBehaviour {
     using(UnityWebRequest www = UnityWebRequest.Post(requestDomain + "/register", form)) {
       yield return www.Send();
 
-      if(www.isError) {
+      if(www.isNetworkError) {
         errorText.text = "Connection Error";
         Debug.LogError(www.error);
       }

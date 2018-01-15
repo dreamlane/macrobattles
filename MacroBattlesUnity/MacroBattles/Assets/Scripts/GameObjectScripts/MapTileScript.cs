@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapTileScript : MonoBehaviour {
-  public int x;
-  public int y;
-
-  private List<TileResourceModel> resources;
+  private MapTileModel model;
   private List<ResourceTemplateModel> resource_templates;
   private BottomBarResource bottomBarResource;
   private GameSceneMain gameSceneMain;
@@ -21,6 +19,9 @@ public class MapTileScript : MonoBehaviour {
     GameModel gameModel = gameSceneMain.GetGameModel();
     resource_templates = gameModel.resource_templates;
 
+
+    bottomBarResource.bottomBarButton.onClick.AddListener(SelectUnit);
+
   }
 
   void Update() {
@@ -28,8 +29,9 @@ public class MapTileScript : MonoBehaviour {
   }
 
   void OnMouseUpAsButton() {
-    Debug.Log("Clicked me: " + x + y);
-    // Show x and y on client.
+    Debug.Log("Clicked me: " + model.coordinate_x + model.coordinate_y);
+    
+    List<TileResourceModel> resources = model.resources;
     if (bottomBarResource != null){
       int resourceType = 0;
       foreach (ResourceTemplateModel resource_template in resource_templates) {
@@ -37,10 +39,18 @@ public class MapTileScript : MonoBehaviour {
             resourceType = resource_template.type;
          }
      }
-      bottomBarResource.tileCoordsText.text = "x:" + x + " y:" + y;
+      bottomBarResource.tileCoordsText.text = 
+          "x:" + model.coordinate_x + " y:" + model.coordinate_y;
       bottomBarResource.resourceNameText.text = "";
       bottomBarResource.resourceTypeText.text = "" + resourceType;
       bottomBarResource.saturationText.text = "" + resources[0].saturation;
+      // if unit exists on tile
+      if (model.unit_keys.Count != 0) {
+        bottomBarResource.bottomBarButton.gameObject.SetActive(true);
+        bottomBarResource.bottomBarButton.GetComponentInChildren<Text>().text = "Select Unit";
+      } else {
+        bottomBarResource.bottomBarButton.gameObject.SetActive(false);
+      }
     }
 
     foreach (TileResourceModel resource in resources) {
@@ -49,7 +59,12 @@ public class MapTileScript : MonoBehaviour {
     }
   }
 
-  public void SetTileResources(List<TileResourceModel> models) {
-    resources = models;
+  public void SetModel(MapTileModel model) {
+    this.model = model;
+  }
+
+  void SelectUnit() {
+    Debug.Log ("Unit has been Selected");
+    bottomBarResource.bottomBarButton.gameObject.SetActive(false);
   }
 }

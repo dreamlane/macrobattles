@@ -23,7 +23,7 @@ public class MapRequestHandler {
     using(UnityWebRequest www = UnityWebRequest.Get(requestDomain + query)) {
       yield return www.Send();
 
-      if(www.isError) {
+      if(www.isNetworkError) {
         // TODO: Make this show an error on the client, or something.
         Debug.LogError(www.error);
       } else {

@@ -1,17 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class MapTileScript : MonoBehaviour {
   private MapTileModel model;
   private List<ResourceTemplateModel> resource_templates;
-  private BottomBarResource bottomBarResource;
+  private BottomBarController bottomBarController;
   private GameSceneMain gameSceneMain;
 
   void Start() {
     GameObject bottomBarObject = GameObject.FindWithTag("BottomBar");
-    bottomBarResource = bottomBarObject.GetComponent(typeof(BottomBarResource))
-        as BottomBarResource;
+    bottomBarController =
+        bottomBarObject.GetComponent(typeof(BottomBarController))
+        as BottomBarController;
 
     GameObject mainCamera = GameObject.FindWithTag("MainCamera");
     gameSceneMain = mainCamera.GetComponent(typeof(GameSceneMain))
@@ -20,7 +22,7 @@ public class MapTileScript : MonoBehaviour {
     resource_templates = gameModel.resource_templates;
 
 
-    bottomBarResource.bottomBarButton.onClick.AddListener(SelectUnit);
+    bottomBarController.bottomBarButton.onClick.AddListener(SelectUnit);
 
   }
 
@@ -30,26 +32,31 @@ public class MapTileScript : MonoBehaviour {
 
   void OnMouseUpAsButton() {
     Debug.Log("Clicked me: " + model.coordinate_x + model.coordinate_y);
-    
+
+    if (EventSystem.current.IsPointerOverGameObject()) {
+      Debug.Log("Pointer is over a UI element, do not handle click.");
+      return;
+    }
+
     List<TileResourceModel> resources = model.resources;
-    if (bottomBarResource != null){
+    if (bottomBarController != null){
       int resourceType = 0;
       foreach (ResourceTemplateModel resource_template in resource_templates) {
          if (resource_template.key.Equals(resources[0].template_key)) {
             resourceType = resource_template.type;
          }
      }
-      bottomBarResource.tileCoordsText.text = 
+      bottomBarController.tileCoordsText.text =
           "x:" + model.coordinate_x + " y:" + model.coordinate_y;
-      bottomBarResource.resourceNameText.text = "";
-      bottomBarResource.resourceTypeText.text = "" + resourceType;
-      bottomBarResource.saturationText.text = "" + resources[0].saturation;
+      bottomBarController.resourceNameText.text = "";
+      bottomBarController.resourceTypeText.text = "" + resourceType;
+      bottomBarController.saturationText.text = "" + resources[0].saturation;
       // if unit exists on tile
       if (model.unit_keys.Count != 0) {
-        bottomBarResource.bottomBarButton.gameObject.SetActive(true);
-        bottomBarResource.bottomBarButton.GetComponentInChildren<Text>().text = "Select Unit";
+        bottomBarController.bottomBarButton.gameObject.SetActive(true);
+        bottomBarController.bottomBarButton.GetComponentInChildren<Text>().text = "Select Unit";
       } else {
-        bottomBarResource.bottomBarButton.gameObject.SetActive(false);
+        bottomBarController.bottomBarButton.gameObject.SetActive(false);
       }
     }
 
@@ -65,6 +72,6 @@ public class MapTileScript : MonoBehaviour {
 
   void SelectUnit() {
     Debug.Log ("Unit has been Selected");
-    bottomBarResource.bottomBarButton.gameObject.SetActive(false);
+    bottomBarController.bottomBarButton.gameObject.SetActive(false);
   }
 }

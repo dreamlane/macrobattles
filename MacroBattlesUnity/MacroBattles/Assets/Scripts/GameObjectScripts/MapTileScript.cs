@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class MapTileScript : MonoBehaviour {
   private MapTileModel model;
-  private List<ResourceTemplateModel> resource_templates;
   private BottomBarController bottomBarController;
   private GameSceneMain gameSceneMain;
 
@@ -14,16 +13,7 @@ public class MapTileScript : MonoBehaviour {
     bottomBarController =
         bottomBarObject.GetComponent(typeof(BottomBarController))
         as BottomBarController;
-
-    GameObject mainCamera = GameObject.FindWithTag("MainCamera");
-    gameSceneMain = mainCamera.GetComponent(typeof(GameSceneMain))
-        as GameSceneMain;
-    GameModel gameModel = gameSceneMain.GetGameModel();
-    resource_templates = gameModel.resource_templates;
-
-
     bottomBarController.bottomBarButton.onClick.AddListener(SelectUnit);
-
   }
 
   void Update() {
@@ -31,21 +21,18 @@ public class MapTileScript : MonoBehaviour {
   }
 
   void OnMouseUpAsButton() {
-    Debug.Log("Clicked me: " + model.coordinate_x + model.coordinate_y);
-
     if (EventSystem.current.IsPointerOverGameObject()) {
       Debug.Log("Pointer is over a UI element, do not handle click.");
       return;
     }
 
+    // When the tile is tapped, show pertinent information in the bottom bar.
+    // Start with Units if any are on the tile. TODO
+
     List<TileResourceModel> resources = model.resources;
-    if (bottomBarController != null){
+    if (bottomBarController != null) {
       int resourceType = 0;
-      foreach (ResourceTemplateModel resource_template in resource_templates) {
-         if (resource_template.key.Equals(resources[0].template_key)) {
-            resourceType = resource_template.type;
-         }
-     }
+      resourceType = GameState.GetResourceTemplate(resources[0].template_key).type;
       bottomBarController.tileCoordsText.text =
           "x:" + model.coordinate_x + " y:" + model.coordinate_y;
       bottomBarController.resourceNameText.text = "";
@@ -72,6 +59,7 @@ public class MapTileScript : MonoBehaviour {
 
   void SelectUnit() {
     Debug.Log ("Unit has been Selected");
+    // Update the bottom bar to show unit information.
     bottomBarController.bottomBarButton.gameObject.SetActive(false);
   }
 }

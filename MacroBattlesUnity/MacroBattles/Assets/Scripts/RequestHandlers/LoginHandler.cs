@@ -40,6 +40,8 @@ public class LoginHandler : MonoBehaviour {
     form.AddField("password", passwordField.text);
 
     using(UnityWebRequest www = UnityWebRequest.Post(requestDomain + "/login", form)) {
+      // For some reason, chunked transfer does not work with the server.
+      www.chunkedTransfer = false;
       yield return www.Send();
 
       if(www.isNetworkError) {
@@ -63,6 +65,8 @@ public class LoginHandler : MonoBehaviour {
     form.AddField("username", usernameField.text);
     form.AddField("password", passwordField.text);
     using(UnityWebRequest www = UnityWebRequest.Post(requestDomain + "/register", form)) {
+      // For some reason, chunked transfer does not work with the server.
+      www.chunkedTransfer = false;
       yield return www.Send();
 
       if(www.isNetworkError) {

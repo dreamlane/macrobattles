@@ -19,10 +19,12 @@ from gamelogic import equipUnit
 
 class LoginHandler(BaseHandler):
   def post(self):
+    logging.info(self.request)
     self.response.write(UserLoginHandler.handleLoginRequest(self.request))
 
 class RegisterHandler(BaseHandler):
   def post(self):
+    logging.info(self.request)
     self.response.write(UserLoginHandler.handleRegisterRequest(self.request))
 
 class JoinGameHandler(BaseHandler):

@@ -4,8 +4,7 @@ using UnityEngine;
 public class MapEngine : MonoBehaviour {
 
   private bool mapBuilt = false;
-
-  public List<MapTileModel> mapTiles;
+  private bool mapOutOfDate = false;
 
   public GameObject mapTilePrefab;
   public GameObject structurePrefab;
@@ -15,22 +14,14 @@ public class MapEngine : MonoBehaviour {
 
   void Start() {
     Debug.Log("Start called on MapEngine");
-    mapTiles = null;
   }
 
   void Update() {
-    if (!mapBuilt) {
-      if (mapTiles != null) {
-        Debug.Log(mapTiles);
+    if (!mapBuilt || mapOutOfDate) {
+      if (GameState.HasMapTiles()) {
         BuildMap();
       }
     }
-  }
-
-  public void SetMapTiles(List<MapTileModel> tiles) {
-    mapTiles = tiles;
-    // Anytime the tiles are updated, rebuild the map.
-    BuildMap();
   }
 
   private void BuildMap() {
@@ -45,7 +36,7 @@ public class MapEngine : MonoBehaviour {
     }
 
     // Build the game objects for the map.
-    foreach (MapTileModel tileModel in mapTiles) {
+    foreach (MapTileModel tileModel in GameState.GetMapTileList()) {
       // Make a new game object for the map tile.
       GameObject tileObject = Instantiate(mapTilePrefab) as GameObject;
       tileObject.transform.parent = mapObject.transform;
@@ -56,7 +47,7 @@ public class MapEngine : MonoBehaviour {
       tileObject.transform.localPosition = new Vector3(x_pos, y_pos, z_pos);
       MapTileScript script = tileObject.GetComponent(typeof(MapTileScript)) as MapTileScript;
       script.SetModel(tileModel);
-      
+
       // Make a new game object for every unit on the tile.
       // TODO: Make this more interesting for battles that have many units.
       if (tileModel.unit_keys.Count > 0) {
@@ -93,9 +84,14 @@ public class MapEngine : MonoBehaviour {
       }
     }
     mapBuilt = true;
+    mapOutOfDate = false;
   }
 
   public bool isMapBuilt() {
     return mapBuilt;
+  }
+
+  public void MarkMapAsOutOfDate() {
+    mapOutOfDate = true;
   }
 }

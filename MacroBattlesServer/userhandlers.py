@@ -30,6 +30,7 @@ class UserLoginHandler():
       else:
         error_message += ' Password incorrect.'
     else:
+      logging.info('username is: ' + username)
       error_message += ' Username not found.'
     return ResponseBuilder().setErrorMessage(error_message).build()
 
@@ -41,6 +42,7 @@ class UserLoginHandler():
     password = request.get('password')
 
     if len(username) < 3:
+      logging.info('username is: ' + username)
       response.setErrorMessage('Username is too short.')
       return response.build()
 

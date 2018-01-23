@@ -12,6 +12,8 @@ public class ResponseModel {
 public class PlayerModel {
   public string key;
   public string username;
+  // How much money the player has.
+  public int money;
 }
 
 [System.Serializable]

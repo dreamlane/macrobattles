@@ -20,6 +20,9 @@ public class BottomBarController : MonoBehaviour {
   public Text rightLineText2;
   public Text rightLineText3;
 
+  // Action Button, assigned in the editor.
+  public Button actionButton;
+
   // Page Numbers.
   private int currentPage;
   private int totalPages;
@@ -41,6 +44,9 @@ public class BottomBarController : MonoBehaviour {
 
     // TODO: put some placeholder? "Tap on a tile to see some stuff"?
     lineStrings = new Dictionary<string, List<string>>();
+
+    // Hide the action button by default.
+    actionButton.gameObject.SetActive(false);
 	}
 
 	// Update is called once per frame
@@ -49,17 +55,17 @@ public class BottomBarController : MonoBehaviour {
 	}
 
   public void ShowTileResources(List<TileResourceModel> resources) {
-    lineStrings = new Dictionary<string, List<string>>();
+    ClearLineStrings();
     totalPages = 0;
     currentPage = 1;
 
-    // TODO: make the string lists and put them in the dictionary;
     List<string> resourceTypes = new List<string>();
     List<string> saturations = new List<string>();
     List<string> names = new List<string>();
     List<string> propertyAs = new List<string>();
     List<string> propertyBs = new List<string>();
     List<string> propertyCs = new List<string>();
+
     foreach (TileResourceModel resource in resources) {
       totalPages += 1;
       ResourceTemplateModel model = GameState.GetResourceTemplate(resource.template_key);
@@ -110,12 +116,12 @@ public class BottomBarController : MonoBehaviour {
 
     // Now all of the strings are setup, so update the UI.
     if (totalPages > 0) {
-      lineStrings.Add(LEFT_LINE_1_ID, resourceTypes);
-      lineStrings.Add(LEFT_LINE_2_ID, saturations);
-      lineStrings.Add(LEFT_LINE_3_ID, names);
-      lineStrings.Add(RIGHT_LINE_1_ID, propertyAs);
-      lineStrings.Add(RIGHT_LINE_2_ID, propertyBs);
-      lineStrings.Add(RIGHT_LINE_3_ID, propertyCs);
+      lineStrings[LEFT_LINE_1_ID] = resourceTypes;
+      lineStrings[LEFT_LINE_2_ID] = saturations;
+      lineStrings[LEFT_LINE_3_ID] = names;
+      lineStrings[RIGHT_LINE_1_ID] = propertyAs;
+      lineStrings[RIGHT_LINE_2_ID] = propertyBs;
+      lineStrings[RIGHT_LINE_3_ID] = propertyCs;
       UpdatePage();
     } else {
       Debug.LogError("ShowTileResources ended with totalPages < 1!");
@@ -130,8 +136,27 @@ public class BottomBarController : MonoBehaviour {
     //TODO: implement.
   }
 
-  void ShowTileHomeBase() {
+  public void ShowTileHomeBase() {
+    ClearLineStrings();
+    currentPage = 1;
+    totalPages = 1;
 
+    PlayerModel player = GameState.GetCurrentPlayer();
+    if (player == null) {
+      Debug.LogError("Player is null in ShowTileHomeBase!");
+      return;
+    }
+
+    List<string> money = new List<string>();
+    money.Add(string.Format("Money: {0}", player.money));
+    lineStrings[LEFT_LINE_1_ID] = money;
+
+    // Enable the action button, and set it up for hiring units.
+    actionButton.GetComponentInChildren<Text>().text = "Hire Unit";
+    actionButton.onClick.AddListener(ShowHireUnitUI);
+    actionButton.gameObject.SetActive(true);
+
+    UpdatePage();
   }
 
   void GotoNextPage() {
@@ -187,5 +212,20 @@ public class BottomBarController : MonoBehaviour {
         textObjectToModify.text = pair.Value[currentPage - 1];
       }
     }
+  }
+
+  private void ClearLineStrings() {
+    lineStrings = new Dictionary<string, List<string>>();
+    lineStrings.Add(LEFT_LINE_1_ID, new List<string>() {""});
+    lineStrings.Add(LEFT_LINE_2_ID, new List<string>() {""});
+    lineStrings.Add(LEFT_LINE_3_ID, new List<string>() {""});
+    lineStrings.Add(RIGHT_LINE_1_ID, new List<string>() {""});
+    lineStrings.Add(RIGHT_LINE_2_ID, new List<string>() {""});
+    lineStrings.Add(RIGHT_LINE_3_ID, new List<string>() {""});
+  }
+
+  private void ShowHireUnitUI() {
+    // TODO: Make this actually show a dialog UI.
+    Debug.Log("Hire Unit UI should show.");
   }
 }

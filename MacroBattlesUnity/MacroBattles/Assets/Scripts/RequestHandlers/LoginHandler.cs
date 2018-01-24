@@ -83,9 +83,9 @@ public class LoginHandler : MonoBehaviour {
 
   private void handleResponse(ResponseModel response) {
     if (response.status == ResponseConstants.SUCCESS) {
-      // Set the initial PlayerModel on the PlayerState.
+      // Set the initial PlayerModel on the GameState.
       PlayerModel playerModel = JsonUtility.FromJson<PlayerModel>(response.data);
-      PlayerState.SetPlayerModel(playerModel);
+      GameState.SetCurrentPlayerModel(playerModel);
       SceneManager.LoadScene("GameScene", LoadSceneMode.Single);
     } else {
       // If Login doesn't work, expose the error message to the user.

@@ -28,35 +28,13 @@ public class MapTileScript : MonoBehaviour {
 
     // When the tile is tapped, show pertinent information in the bottom bar.
     // Start with Units if any are on the tile. TODO
-    // Ally Units.
-    // Enemy Units.
-    // Home Base.
-    // if (model.is_player_home) {
-    //   SelectHomeBase();
-    // }
-    // Show Tile Resources.
-    SelectTileResources();
-
-    // List<TileResourceModel> resources = model.resources;
-    // if (bottomBarController != null) {
-    //   int resourceType = 0;
-    //   resourceType = GameState.GetResourceTemplate(resources[0].template_key).type;
-    //   // bottomBarController.resourceNameText.text = "";
-    //   // bottomBarController.resourceTypeText.text = "" + resourceType;
-    //   // bottomBarController.saturationText.text = "" + resources[0].saturation;
-    //   // if unit exists on tile
-    //   // if (model.unit_keys.Count != 0) {
-    //   //   bottomBarController.bottomBarButton.gameObject.SetActive(true);
-    //   //   bottomBarController.bottomBarButton.GetComponentInChildren<Text>().text = "Select Unit";
-    //   // } else {
-    //   //   bottomBarController.bottomBarButton.gameObject.SetActive(false);
-    //   // }
-    // }
-
-    // foreach (TileResourceModel resource in resources) {
-    //   Debug.Log("Resource template key: " + resource.template_key);
-    //   Debug.Log("Resource saturation: " + resource.saturation);
-    // }
+    // TODO: Ally Units.
+    // TODO: Enemy Units.
+    if (model.is_player_home) {
+      SelectHomeBase();
+    } else {
+      SelectTileResources();
+    }
   }
 
   public void SetModel(MapTileModel model) {
@@ -72,6 +50,7 @@ public class MapTileScript : MonoBehaviour {
   private void SelectHomeBase() {
     Debug.Log("Home Base has been Selected");
     // Update the bottom bar to show home base information.
+    bottomBarController.ShowTileHomeBase();
   }
 
   private void SelectTileResources() {

@@ -25,7 +25,7 @@ class UserLoginHandler():
       if player.password == password:
         # Return the urlsafe player key to the client.
         # TODO: Figure out authentication.
-        data = {'key': player.key.urlsafe()}
+        data = {'key': player.key.urlsafe(), 'money': player.money}
         return ResponseBuilder().setData(json.dumps(data)).build()
       else:
         error_message += ' Password incorrect.'

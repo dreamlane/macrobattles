@@ -4,6 +4,7 @@ using UnityEngine;
 
 /*
  * The state of the game is primarily just GameModel in a dictionary form.
+ * It also includes the PlayerModel for the current player.
  * In the future, there may be more data here.
  */
 public static class GameState {
@@ -22,6 +23,8 @@ public static class GameState {
   // The structures in the game.
   // See StructureModels.cs
   private static Dictionary<string, StructureModel> structures;
+  // The model of the current player.
+  private static PlayerModel currentPlayer;
 
   public static void UpdateGameModel(GameModel gameModel) {
     ClearGameState();
@@ -101,5 +104,20 @@ public static class GameState {
       return null;
     }
     return structures[key];
+  }
+
+  public static void SetCurrentPlayerModel(PlayerModel model) {
+    currentPlayer = model;
+  }
+
+  public static PlayerModel GetCurrentPlayer() {
+    return currentPlayer;
+  }
+
+  public static string GetCurrentPlayerKey() {
+    if (currentPlayer != null) {
+      return currentPlayer.key;
+    }
+    return null;
   }
 }

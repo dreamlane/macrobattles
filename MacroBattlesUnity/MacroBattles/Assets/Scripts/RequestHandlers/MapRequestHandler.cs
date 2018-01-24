@@ -17,8 +17,8 @@ public class MapRequestHandler {
       requestDomain = Constants.LOCAL_HOST;
     }
 #endif
-    // TODO: Error check the PlayerState first.
-    string query = "/map?player_id=" + PlayerState.GetPlayerKey();
+    // TODO: Error check the GameState first.
+    string query = "/map?player_id=" + GameState.GetCurrentPlayerKey();
 
     using(UnityWebRequest www = UnityWebRequest.Get(requestDomain + query)) {
       yield return www.SendWebRequest();

@@ -20,8 +20,10 @@ public class BottomBarController : MonoBehaviour {
   public Text rightLineText2;
   public Text rightLineText3;
 
-  // Action Button, assigned in the editor.
+  // Action Buttons, assigned in the editor.
   public Button actionButton;
+  public Button actionButton2;
+  public Button actionButton3;
 
   // Page Numbers.
   private int currentPage;
@@ -45,8 +47,10 @@ public class BottomBarController : MonoBehaviour {
     // TODO: put some placeholder? "Tap on a tile to see some stuff"?
     lineStrings = new Dictionary<string, List<string>>();
 
-    // Hide the action button by default.
+    // Hide the action buttons by default.
     actionButton.gameObject.SetActive(false);
+    actionButton2.gameObject.SetActive(false);
+    actionButton3.gameObject.SetActive(false);
 	}
 
 	// Update is called once per frame
@@ -55,8 +59,10 @@ public class BottomBarController : MonoBehaviour {
 	}
 
   public void ShowTileResources(List<TileResourceModel> resources) {
-    // Hide the action button just incase it was revealed previously.
+    // Hide the action buttons just incase they were revealed previously.
     actionButton.gameObject.SetActive(false);
+    actionButton2.gameObject.SetActive(false);
+    actionButton3.gameObject.SetActive(false);
 
     ClearLineStrings();
     totalPages = 0;
@@ -139,6 +145,11 @@ public class BottomBarController : MonoBehaviour {
   }
 
   public void ShowTileHomeBase() {
+    // Hide the action buttons just incase they were revealed previously.
+    actionButton.gameObject.SetActive(false);
+    actionButton2.gameObject.SetActive(false);
+    actionButton3.gameObject.SetActive(false);
+    
     ClearLineStrings();
     currentPage = 1;
     totalPages = 1;
@@ -227,7 +238,30 @@ public class BottomBarController : MonoBehaviour {
   }
 
   private void ShowHireUnitUI() {
-    // TODO: Make this actually show a dialog UI.
     Debug.Log("Hire Unit UI should show.");
+
+    // Enable the action buttons, and set them up for hiring units.
+    actionButton.GetComponentInChildren<Text>().text = "Back";
+    actionButton.onClick.AddListener(ShowTileHomeBase);
+    actionButton.gameObject.SetActive(true);
+
+    actionButton2.GetComponentInChildren<Text>().text = "Hire Soldier";
+    actionButton2.onClick.AddListener(HireSoldier);
+    actionButton2.gameObject.SetActive(true);
+
+    actionButton3.GetComponentInChildren<Text>().text = "Hire Worker";
+    actionButton3.onClick.AddListener(HireWorker);
+    actionButton3.gameObject.SetActive(true);
+
+  }
+
+  private void HireSoldier() {
+    // TODO: hire a soldier
+    Debug.Log("Soldier should be hired.");
+  }
+
+  private void HireWorker() {
+    // TODO: hire a worker
+    Debug.Log("Worker should be hired.");
   }
 }

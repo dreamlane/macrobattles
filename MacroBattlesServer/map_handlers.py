@@ -121,6 +121,7 @@ def handleGetMapRequest(inputs):
       # Serialize the resource_template into what the client needs.
       serialized_rt = {}
       serialized_rt['key'] = template.key.urlsafe()
+      serialized_rt['name'] = template.name
       serialized_rt['type'] = template.resource_type
       if template.resource_type == RESOURCE_TYPES_INT_MAPPING[METAL_KEY]:
         serialized_rt['metal_properties'] = template.metal_properties.to_dict()

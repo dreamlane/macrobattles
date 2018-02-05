@@ -113,8 +113,7 @@ public class BottomBarController : MonoBehaviour {
       saturations.Add(string.Format("Saturation: {0}", resource.saturation));
 
       // Set the string for the name of the resource.
-      // TODO: finish this.
-      names.Add("Name: unknown");
+      names.Add("Name: " + model.name);
     }
 
     // Now all of the strings are setup, so update the UI.

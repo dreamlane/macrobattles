@@ -26,6 +26,7 @@ public class LeatherPropertiesModel {
 [System.Serializable]
 public class ResourceTemplateModel {
   public string key;
+  public string name;
   public int type;
   public MetalPropertiesModel metal_properties;
   public WoodPropertiesModel wood_properties;

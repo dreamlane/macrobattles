@@ -55,6 +55,9 @@ public class BottomBarController : MonoBehaviour {
 	}
 
   public void ShowTileResources(List<TileResourceModel> resources) {
+    // Hide the action button just incase it was revealed previously.
+    actionButton.gameObject.SetActive(false);
+
     ClearLineStrings();
     totalPages = 0;
     currentPage = 1;

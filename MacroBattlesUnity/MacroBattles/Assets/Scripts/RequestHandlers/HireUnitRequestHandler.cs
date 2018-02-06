@@ -37,16 +37,15 @@ public class HireUnitRequestHandler {
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
         if (response.status == ResponseConstants.SUCCESS) {
           // TODO: Handle a response from the server.
-          // // We've gotten a successful response, deserialize the response into a model.
-          // GameModel gameModel = JsonUtility.FromJson<GameModel>(response.data);
-          // // Populate the GameState with the gameModel.
-          // GameState.UpdateGameModel(gameModel);
-          // // Tell the Map to update, now that the game state is updated.
+          Debug.Log(response.data);
+    
+          if (response.data.equals("unit too expensive")) {
+            // TODO: show cost of unit to user and their money amount.
+            
+          } else { // TODO: update map to show new unit.
 
-          // // Get a handle on the mapObject, and its script
-          // GameObject mapObject = GameObject.FindWithTag("Map");
-          // MapEngine mapEngine = mapObject.GetComponent(typeof(MapEngine)) as MapEngine;
-          // mapEngine.MarkMapAsOutOfDate();
+          }
+         
         } else {
           // TODO: If getting the map doesn't work, expose the Error Message to the user.
           Debug.Log(response.status);

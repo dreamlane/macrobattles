@@ -53,7 +53,7 @@ class SellResourceHandler(BaseHandler):
     # Todo: write response
 
 class HireUnitHandler(BaseHandler):
-  def post(self):
+  def put(self):
     # TODO: Handle auth/session.
     required_keys = ['player_id', 'unit_type_string']
     logging.info(self.request.body)

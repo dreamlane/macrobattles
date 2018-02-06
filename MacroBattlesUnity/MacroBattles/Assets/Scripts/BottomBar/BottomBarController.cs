@@ -149,7 +149,7 @@ public class BottomBarController : MonoBehaviour {
     actionButton.gameObject.SetActive(false);
     actionButton2.gameObject.SetActive(false);
     actionButton3.gameObject.SetActive(false);
-    
+
     ClearLineStrings();
     currentPage = 1;
     totalPages = 1;
@@ -256,12 +256,12 @@ public class BottomBarController : MonoBehaviour {
   }
 
   private void HireSoldier() {
-    // TODO: hire a soldier
     Debug.Log("Soldier should be hired.");
+    StartCoroutine(HireUnitRequestHandler.HireUnit("SOLDIER"));
   }
 
   private void HireWorker() {
-    // TODO: hire a worker
     Debug.Log("Worker should be hired.");
+    StartCoroutine(HireUnitRequestHandler.HireUnit("WORKER"));
   }
 }

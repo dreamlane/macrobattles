@@ -11,19 +11,19 @@ from gamelogic import *
 
 class AdminLoginHandler(webapp2.RequestHandler):
   def get(self):
-        user = users.get_current_user()
-        if user:
-            nickname = user.nickname()
-            logout_url = users.create_logout_url('/')
-            # TODO: Return some buttons that do admin commands!
-            greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(
-                nickname, logout_url)
-        else:
-            login_url = users.create_login_url('/')
-            greeting = '<a href="{}">Sign in</a>'.format(login_url)
+    user = users.get_current_user()
+    if user:
+        nickname = user.nickname()
+        logout_url = users.create_logout_url('/')
+        # TODO: Return some buttons that do admin commands!
+        greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(
+            nickname, logout_url)
+    else:
+        login_url = users.create_login_url('/')
+        greeting = '<a href="{}">Sign in</a>'.format(login_url)
 
-        self.response.write(
-            '<html><body>{}</body></html>'.format(greeting))
+    self.response.write(
+        '<html><body>{}</body></html>'.format(greeting))
 
 class AdminTurnHandler(webapp2.RequestHandler):
   def post(self):
@@ -35,19 +35,19 @@ class TestMapGeneration(webapp2.RequestHandler):
     generateMapTiles()
 
 class TestGivePlayerResource(webapp2.RequestHandler):
-    def post(self):
-        testGivePlayerResource(self.request.get('player_id'))
+  def post(self):
+    testGivePlayerResource(self.request.get('player_id'))
 
 class TestGivePlayerEquipment(webapp2.RequestHandler):
-    def post(self):
-        testGivePlayerEquipment(self.request.get('player_id'))
+  def post(self):
+    testGivePlayerEquipment(self.request.get('player_id'))
 
 class TestPutCampOnSpot(webapp2.RequestHandler):
-    def post(self):
-      testPutCampOnSpot(
-        self.request.get('player_id'),
-        self.request.get('map_tile_id'),
-        self.request.get('tile_resource_id'))
+  def post(self):
+    testPutCampOnSpot(
+      self.request.get('player_id'),
+      self.request.get('map_tile_id'),
+      self.request.get('tile_resource_id'))
 
 app = webapp2.WSGIApplication([
     webapp2.Route(r'/admin/login', handler=AdminLoginHandler, name='admin-login'),

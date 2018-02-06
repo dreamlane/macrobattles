@@ -56,6 +56,7 @@ class HireUnitHandler(BaseHandler):
   def post(self):
     # TODO: Handle auth/session.
     required_keys = ['player_id', 'unit_type_string']
+    logging.info(self.request.body)
     inputs = json.loads(self.request.body)
     if not areRequiredKeysPresent(required_keys, inputs):
       logging.error('The input for hire-unit is missing data.')

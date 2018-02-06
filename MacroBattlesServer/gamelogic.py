@@ -1,6 +1,7 @@
 ## gamelogic.py
 
 from random import *
+import json
 import logging
 
 from google.appengine.ext import ndb
@@ -169,7 +170,7 @@ def hireUnit(inputs):
     logging.info('unit added')
   else:
     logging.error('unit too expensive')
-    return ResponseBuilder().setErrorMessage('unit too expensive').build()
+    return ResponseBuilder().setData(json.dumps('unit too expensive')).build()
 
 def isUnitOnHomeTile(unit):
   # TODO: Move this to a util file?

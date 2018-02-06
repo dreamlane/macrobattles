@@ -62,7 +62,6 @@ class HireUnitHandler(BaseHandler):
       logging.error('The input for hire-unit is missing data.')
       # TODO: Write a failure response.
       return None
-    # Todo: write response
     self.response.write(hireUnit(inputs))
 
 class EquipUnitHandler(BaseHandler):

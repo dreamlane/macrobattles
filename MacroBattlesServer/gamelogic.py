@@ -23,6 +23,7 @@ from models import Player
 from models import ResourceTemplate
 from models import TileResource
 from models import Unit
+from requestutils import ResponseBuilder
 
 def generateTileResource():
   ## Randomly choose a resource type key.
@@ -168,6 +169,7 @@ def hireUnit(inputs):
     logging.info('unit added')
   else:
     logging.error('unit too expensive')
+    return ResponseBuilder().setErrorMessage('unit too expensive').build()
 
 def isUnitOnHomeTile(unit):
   # TODO: Move this to a util file?

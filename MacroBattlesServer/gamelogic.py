@@ -168,6 +168,7 @@ def hireUnit(inputs):
     ).put())
     player.put()
     logging.info('unit added')
+    #TODO send a response that has the unit info in it.
   else:
     logging.error('unit too expensive')
     return ResponseBuilder().setData(json.dumps('unit too expensive')).build()

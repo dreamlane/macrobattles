@@ -5,15 +5,15 @@ import logging
 import webapp2
 
 from crafting_handlers import craftEquipment
-from map_handlers import handleGetMapRequest
-from userhandlers import UserLoginHandler
-from requestutils import BaseHandler
-from requestutils import ResponseBuilder
-from requestutils import areRequiredKeysPresent
 from gamelogic import addPlayerToWorld
 from gamelogic import sellResource
 from gamelogic import hireUnit
 from gamelogic import equipUnit
+from map_handlers import handleGetMapRequest
+from requestutils import BaseHandler
+from requestutils import ResponseBuilder
+from requestutils import areRequiredKeysPresent
+from userhandlers import UserLoginHandler
 
 ## TODO: DRY up all of the required keys and json.loads logic.
 

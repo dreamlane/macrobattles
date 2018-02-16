@@ -65,12 +65,18 @@ def generateMapTiles():
         coordinate_y = y,
         resources = tile_resources
       ))
-  ndb.put_multi(map_tile_models)
+  return ndb.put_multi(map_tile_models)
 
 def addPlayerToWorld(inputs):
   map_query = MapTile.query()
-  map_tiles = map_query.fetch(map_query.count())
-  # TODO: improve the map tile choice logic.
+  map_tiles = None
+  if (map_query.count() == 0):
+    # No map currently exists! May as well make one...
+    map_tiles = ndb.get_multi(generateMapTiles())
+  else:
+    map_tiles = map_query.fetch(map_query.count())
+
+  # TODO: improve the home tile choice logic.
   home_tile = choice(map_tiles)
   while not validateHomeTileSelection(home_tile):
     # TODO: guard against infinite loop, by making the map grow, or blocking the
@@ -82,6 +88,7 @@ def addPlayerToWorld(inputs):
   player.home_tile = home_tile.key
   player.money = 100
   player.put()
+  return True
 
 def validateHomeTileSelection(tile):
   return not tile.is_home_tile

@@ -41,6 +41,7 @@ def handleGetMapRequest(inputs):
   if not player.home_tile:
     # If the player does not have a home tile, then they aren't in the game, and
     # they need to join the game.
+    logging.error('Player: ' + player_key.urlsafe() + " is not in the game!")
     error_message = 'Player is not in the game.'
     return ResponseBuilder().setErrorMessage(error_message).build()
 

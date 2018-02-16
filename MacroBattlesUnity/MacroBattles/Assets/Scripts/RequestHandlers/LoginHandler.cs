@@ -72,8 +72,7 @@ public class LoginHandler : MonoBehaviour {
       if(www.isNetworkError) {
         errorText.text = "Connection Error";
         Debug.LogError(www.error);
-      }
-      else {
+      } else {
         string rawjson = www.downloadHandler.text;
         ResponseModel response = JsonUtility.FromJson<ResponseModel>(rawjson);
         handleResponse(response);

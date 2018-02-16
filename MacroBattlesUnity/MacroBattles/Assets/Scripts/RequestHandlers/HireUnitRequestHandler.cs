@@ -38,14 +38,14 @@ public class HireUnitRequestHandler {
         if (response.status == ResponseConstants.SUCCESS) {
           // TODO: Handle a response from the server.
           Debug.Log(response.data);
-    
-          if (response.data.equals("unit too expensive")) {
+
+          if (response.data == "unit too expensive") {
             // TODO: show cost of unit to user and their money amount.
-            
+
           } else { // TODO: update map to show new unit.
 
           }
-         
+
         } else {
           // TODO: If getting the map doesn't work, expose the Error Message to the user.
           Debug.Log(response.status);
